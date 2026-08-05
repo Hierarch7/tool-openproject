@@ -79,6 +79,16 @@ class Query < ApplicationRecord
   end
 
   ##
+  # The query shown whenever the work package module is opened without a saved view.
+  #
+  # On top of +new_default+ it applies the instance wide view defaults. Those are
+  # deliberately not part of +new_default+ as that is also the basis for API
+  # collections, exports and embedded tables which must not be affected.
+  def self.new_default_view(attributes = nil)
+    new_default(attributes).tap(&:apply_default_view_settings)
+  end
+
+  ##
   # Ensure the filters receive
   # the query context as this appears to be lost
   # whenever the field is reloaded from the serialized value
@@ -94,6 +104,30 @@ class Query < ApplicationRecord
     return if sort_criteria.any?
 
     self.sort_criteria = [%w[id asc]]
+  end
+
+  ##
+  # Applies the instance wide defaults meant for the default work package view:
+  # the configured grouping and, unless configured otherwise, starting out
+  # without any filter applied.
+  def apply_default_view_settings
+    self.filters = [] unless Setting.work_package_list_default_open_filter?
+    set_default_group_by
+    # Grouping and the hierarchy mode are mutually exclusive (see #validate_show_hierarchies)
+    self.show_hierarchies = group_by.blank?
+  end
+
+  ##
+  # Applies the instance wide default grouping. An unknown attribute
+  # (e.g. a custom field that has been removed) is silently ignored so that
+  # the default query remains valid.
+  def set_default_group_by
+    return if group_by.present?
+
+    default = Setting.work_package_list_default_group_by.presence
+    return if default.nil? || groupable_columns.none? { |column| column.name.to_s == default }
+
+    self.group_by = default
   end
 
   def context

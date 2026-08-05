@@ -46,8 +46,8 @@ module API
             end
 
             get do
-              query = Query.new_default(user: current_user,
-                                        project: @project)
+              query = Query.new_default_view(user: current_user,
+                                             project: @project)
 
               query_representer_response(query, params, params.delete(:valid_subset))
             end

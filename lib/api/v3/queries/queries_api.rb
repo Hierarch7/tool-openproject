@@ -89,7 +89,7 @@ module API
             end
 
             get do
-              @query = Query.new_default(user: current_user)
+              @query = Query.new_default_view(user: current_user)
 
               authorize_in_any_work_package(:view_work_packages)
 

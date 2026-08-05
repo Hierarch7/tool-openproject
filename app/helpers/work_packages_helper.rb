@@ -128,6 +128,14 @@ module WorkPackagesHelper
       .filter_map { |column| work_packages_columns_options.find { |c| c[:id] == column } }
   end
 
+  def work_packages_group_by_options
+    Query
+      .new
+      .groupable_columns
+      .sort_by(&:caption)
+      .map { |column| [column.caption, column.name.to_s] }
+  end
+
   def protected_work_packages_columns_options
     protected_columns = %w[id subject]
     work_packages_columns_options

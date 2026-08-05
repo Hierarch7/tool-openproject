@@ -91,4 +91,25 @@ RSpec.describe "GET workspaces/:id/queries/default" do
       end
     end
   end
+
+  context "with the instance wide view defaults configured",
+          with_settings: { work_package_list_default_group_by: "status",
+                           work_package_list_default_open_filter: false } do
+    let(:project) { project_instance }
+
+    before do
+      get api_v3_paths.query_project_default(project.id)
+    end
+
+    it "returns the query grouped and without filters" do
+      expect(last_response).to have_http_status(:ok)
+
+      body = JSON.parse(last_response.body)
+
+      expect(body.dig("_links", "groupBy", "href"))
+        .to eq api_v3_paths.query_group_by("status")
+      expect(body["showHierarchies"]).to be false
+      expect(body["filters"]).to be_empty
+    end
+  end
 end

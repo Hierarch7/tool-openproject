@@ -5487,8 +5487,10 @@ en:
   setting_work_package_done_ratio_status_caption_html: >-
     Each status has a <i>% Complete</i> value associated with it.
     Changing status will change <i>% Complete</i>.
+  setting_work_package_list_default_group_by: "Default grouping criteria"
   setting_work_package_list_default_highlighted_attributes: "Default inline highlighted attributes"
   setting_work_package_list_default_highlighting_mode: "Default highlighting mode"
+  setting_work_package_list_default_open_filter: "Only show open work packages by default"
   setting_work_package_properties: "Work package properties"
   setting_work_package_startdate_is_adddate: "Use current date as start date for new work packages"
   setting_work_packages_identifier_classic: Instance-wide numerical sequence (default)

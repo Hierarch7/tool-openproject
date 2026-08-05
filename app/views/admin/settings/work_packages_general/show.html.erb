@@ -51,6 +51,15 @@ See COPYRIGHT and LICENSE files for more details.
     <div class="form--field"><%= setting_check_box :cross_project_work_package_relations %></div>
     <div class="form--field"><%= setting_check_box :display_subprojects_work_packages %></div>
     <div class="form--field"><%= setting_check_box :work_package_startdate_is_adddate %></div>
+    <div class="form--field"><%= setting_check_box :work_package_list_default_open_filter %></div>
+    <div class="form--field">
+      <%= setting_select(
+            :work_package_list_default_group_by,
+            work_packages_group_by_options,
+            blank: :label_none,
+            container_class: "-middle"
+          ) %>
+    </div>
     <div class="op-toast -warning -with-bottom-spacing"
          hidden
          data-admin--work-packages-settings-target="warningToast">

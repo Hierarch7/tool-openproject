@@ -1400,6 +1400,18 @@ module Settings
         default: %w[id subject type status assigned_to priority],
         allowed: -> { Query.new.displayable_columns.map { |c| c.name.to_s } }
       },
+      work_package_list_default_group_by: {
+        description: "Attribute the default work package view is grouped by. " \
+                     "Leave empty to show the work packages in hierarchy mode instead.",
+        format: :string,
+        default: "",
+        allowed: -> { Query.new.groupable_columns.map { |c| c.name.to_s } + [""] }
+      },
+      work_package_list_default_open_filter: {
+        description: "Restrict the default work package view to open work packages. " \
+                     "Disable to start with no filters applied.",
+        default: true
+      },
       work_package_startdate_is_adddate: {
         default: false
       },

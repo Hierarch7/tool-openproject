@@ -72,4 +72,70 @@ RSpec.describe "default query" do
       end
     end
   end
+
+  describe "view settings" do
+    context "with the view settings being set",
+            with_settings: { work_package_list_default_group_by: "status",
+                             work_package_list_default_open_filter: false } do
+      it "does not apply them as they are meant for the default view only" do
+        expect(query.group_by).to be_blank
+        expect(query.show_hierarchies).to be true
+        expect(query.filters.map(&:name)).to eq [:status_id]
+      end
+    end
+  end
+
+  describe "the query of the default view" do
+    let(:query) { Query.new_default_view }
+
+    describe "group by" do
+      context "without the setting being set" do
+        it "is not grouped and keeps the hierarchy mode" do
+          expect(query.group_by).to be_blank
+          expect(query.show_hierarchies).to be true
+          expect(query).to be_valid
+        end
+      end
+
+      context "with the setting being set", with_settings: { work_package_list_default_group_by: "status" } do
+        it "is grouped by that attribute and disables the hierarchy mode" do
+          expect(query.group_by).to eq "status"
+          expect(query.show_hierarchies).to be false
+          expect(query).to be_valid
+        end
+      end
+
+      context "with the setting being set to an invalid value",
+              with_settings: { work_package_list_default_group_by: "fubar" } do
+        it "is not grouped" do
+          expect(query.group_by).to be_blank
+          expect(query.show_hierarchies).to be true
+          expect(query).to be_valid
+        end
+      end
+    end
+
+    describe "default filter" do
+      context "without the setting being disabled" do
+        it "filters for open work packages" do
+          expect(query.filters.map(&:name)).to eq [:status_id]
+          expect(query.filters.first.operator).to eq "o"
+        end
+      end
+
+      context "with the setting being disabled", with_settings: { work_package_list_default_open_filter: false } do
+        it "has no filters" do
+          expect(query.filters).to be_empty
+          expect(query).to be_valid
+        end
+      end
+    end
+
+    describe "sortation and subprojects" do
+      it "keeps the defaults of a plain default query" do
+        expect(query.sort_criteria).to contain_exactly(["id", "asc"])
+        expect(query.include_subprojects).to eq Setting.display_subprojects_work_packages?
+      end
+    end
+  end
 end
