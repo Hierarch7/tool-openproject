@@ -47,16 +47,24 @@ export default class FilterListController extends Controller {
   declare readonly searchItemTargets:HTMLInputElement[];
   declare readonly clearButtonIdValue:string;
 
+  private boundClearListener:() => void;
+
+  initialize() {
+    this.boundClearListener = () => this.resetFilterViaClearButton();
+  }
+
   connect():void {
-    document.getElementById(this.clearButtonIdValue)?.addEventListener('click', () => {
-      this.resetFilterViaClearButton();
-    });
+    this.clearButton?.addEventListener('click', this.boundClearListener);
   }
 
   disconnect():void {
-    document.getElementById(this.clearButtonIdValue)?.removeEventListener('click', () => {
-      this.resetFilterViaClearButton();
-    });
+    this.clearButton?.removeEventListener('click', this.boundClearListener);
+  }
+
+  // The clear button is optional and lives outside this controller's element, so it is looked
+  // up by id. Without the value set, getElementById('') would warn on every connect.
+  private get clearButton():HTMLElement|null {
+    return this.clearButtonIdValue ? document.getElementById(this.clearButtonIdValue) : null;
   }
 
   /**
@@ -75,7 +83,7 @@ export default class FilterListController extends Controller {
     let showNoResultsText = true;
 
     this.searchItemTargets.forEach((item) => {
-      const text = item.querySelector('.filter-target-visible-text')?.textContent?.toLowerCase() || item.textContent?.toLowerCase();
+      const text = item.querySelector('.filter-target-visible-text')?.textContent?.toLowerCase() ?? item.textContent?.toLowerCase();
 
       if (text?.includes(query)) {
         this.setVisibility(item, true);

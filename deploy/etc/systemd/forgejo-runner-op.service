@@ -1,0 +1,17 @@
+[Unit]
+Description=Forgejo Actions Runner (OpenProject, host mode)
+Documentation=https://forgejo.org/docs/latest/admin/actions/
+After=network.target docker.service
+Wants=docker.service
+
+[Service]
+User=forgejo-runner
+WorkingDirectory=/var/lib/forgejo-runner-op
+Environment=HOME=/var/lib/forgejo-runner-op
+ExecStart=/usr/local/bin/forgejo-runner daemon --config /etc/forgejo-runner/op-config.yaml
+Restart=always
+RestartSec=5
+TimeoutStopSec=3h
+
+[Install]
+WantedBy=multi-user.target
