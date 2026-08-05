@@ -30,14 +30,13 @@
 
 import { Controller } from '@hotwired/stimulus';
 import * as WebAuthnJSON from '@github/webauthn-json/browser-ponyfill';
-import QrCreator from 'qr-creator';
 
 // The challenge endpoints return the bare publicKey member, not the full options object
 type CreationOptionsJSON = WebAuthnJSON.CredentialCreationOptionsJSON['publicKey'];
 type RequestOptionsJSON = NonNullable<WebAuthnJSON.CredentialRequestOptionsJSON['publicKey']>;
 
 export default class TwoFactorAuthenticationController extends Controller {
-  static targets = ['resendOptions', 'qrCodeElement', 'webauthnCredential', 'errorDisplay'];
+  static targets = ['resendOptions', 'webauthnCredential', 'errorDisplay'];
 
   declare readonly resendOptionsTarget:HTMLElement;
   declare readonly webauthnCredentialTarget:HTMLInputElement;
@@ -119,20 +118,6 @@ export default class TwoFactorAuthenticationController extends Controller {
       }
       return false;
     }
-  }
-
-  qrCodeElementTargetConnected(target:HTMLElement) {
-    QrCreator.render(
-      {
-        text: target.dataset.value!,
-        radius: 0,
-        ecLevel: 'H',
-        fill: '#222222',
-        background: '#FFFFFF',
-        size: 250,
-      },
-      target,
-    );
   }
 
   print(evt:MouseEvent) {

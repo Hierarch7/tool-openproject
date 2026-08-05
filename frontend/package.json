@@ -159,7 +159,6 @@
     "op-blocknote-extensions": "https://github.com/opf/op-blocknote-extensions/releases/download/v0.2.1/op-blocknote-extensions-0.2.1.tgz",
     "openapi-explorer": "^2.4.801",
     "pako": "^2.2.0",
-    "qr-creator": "^1.0.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "reflect-metadata": "^0.2.2",

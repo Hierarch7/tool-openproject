@@ -1,7 +1,16 @@
-<div class="mobile-otp-qr-form" data-controller="two-factor-authentication">
-  <div class="qr-code-element"
-       data-value="<%= @device.provisioning_url %>"
-       data-two-factor-authentication-target="qrCodeElement"></div>
+<div class="mobile-otp-qr-form">
+  <div class="qr-code-element">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         viewBox="0 0 <%= extent %> <%= extent %>"
+         width="<%= SIZE %>"
+         height="<%= SIZE %>"
+         shape-rendering="crispEdges"
+         role="img"
+         aria-label="<%= t("two_factor_authentication.devices.totp.qr_code_alt") %>">
+      <rect width="<%= extent %>" height="<%= extent %>" fill="#ffffff"></rect>
+      <%= modules_path %>
+    </svg>
+  </div>
 
   <div class="mobile-otp-qr-manually">
     <p>
