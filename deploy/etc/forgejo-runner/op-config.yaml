@@ -1,0 +1,30 @@
+log:
+  level: info
+  job_level: info
+
+runner:
+  file: .runner
+  # Сборка образа OpenProject — одна тяжёлая джоба, параллелить нечего.
+  capacity: 1
+  timeout: 3h
+  shutdown_timeout: 3h
+  insecure: false
+  fetch_timeout: 30s
+  fetch_interval: 2s
+  report_interval: 1s
+  # пусто → берутся метки из .runner (hy-op:host)
+  labels: []
+
+cache:
+  enabled: true
+
+container:
+  # host-mode: джобы исполняются прямо на хосте, докер нужен для сборки образа
+  network: host
+  privileged: false
+  options:
+  valid_volumes: []
+  docker_host: ""
+
+host:
+  workdir_parent: /var/lib/forgejo-runner-op/workspace

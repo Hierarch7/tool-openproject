@@ -1,0 +1,60 @@
+name: op
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: openproject
+      POSTGRES_USER: openproject
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U openproject"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  memcached:
+    image: memcached:latest
+    command: memcached -m 512
+    restart: unless-stopped
+
+  web:
+    image: ${OP_IMAGE}
+    environment:
+      DATABASE_URL: postgresql://openproject:${DB_PASSWORD}@postgres:5432/openproject
+      RAILS_ENV: production
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      OPENPROJECT_HOST__NAME: bo.hesoyam.biz
+      OPENPROJECT_HTTPS: "true"
+      OPENPROJECT_RAILS__RELATIVE__URL__ROOT: ""
+      OPENPROJECT_CACHE__MEMCACHE__SERVER: memcached:11211
+      OPENPROJECT_DEFAULT__LANGUAGE: ru
+      OPENPROJECT_SKIP_DEMO_SEED: "true"
+      USE_PUMA: "true"
+    ports:
+      - "127.0.0.1:8095:80"
+    volumes:
+      - ./assets:/var/openproject/assets
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  worker:
+    image: ${OP_IMAGE}
+    command: ./docker/prod/worker
+    environment:
+      DATABASE_URL: postgresql://openproject:${DB_PASSWORD}@postgres:5432/openproject
+      RAILS_ENV: production
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      OPENPROJECT_HOST__NAME: bo.hesoyam.biz
+      OPENPROJECT_HTTPS: "true"
+      OPENPROJECT_CACHE__MEMCACHE__SERVER: memcached:11211
+    volumes:
+      - ./assets:/var/openproject/assets
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped

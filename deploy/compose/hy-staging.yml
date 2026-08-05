@@ -1,0 +1,53 @@
+name: op-staging
+
+# Staging-копия bo.hesoyam.biz для проверки сборок из форка Hierarch7/openproject.
+# Слушает только 127.0.0.1:8096 — снаружи недоступен, смотреть через ssh-туннель:
+#   ssh -L 8096:127.0.0.1:8096 hy   →   http://localhost:8096
+#
+# БД — копия боевой (PostgreSQL 13, как на проде). Почта переведена в режим
+# test (ActionMailer :test), чтобы стенд с реальными пользователями ничего
+# наружу не отправлял.
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: openproject
+      POSTGRES_USER: openproject
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U openproject"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  memcached:
+    image: memcached:latest
+    command: memcached -m 512
+    restart: unless-stopped
+
+  web:
+    image: ${OP_IMAGE}
+    environment:
+      DATABASE_URL: postgresql://openproject:${DB_PASSWORD}@postgres:5432/openproject
+      RAILS_ENV: production
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      OPENPROJECT_HOST__NAME: localhost:8096
+      OPENPROJECT_HTTPS: "false"
+      OPENPROJECT_RAILS__RELATIVE__URL__ROOT: ""
+      OPENPROJECT_CACHE__MEMCACHE__SERVER: memcached:11211
+      OPENPROJECT_DEFAULT__LANGUAGE: ru
+      OPENPROJECT_EMAIL__DELIVERY__METHOD: test
+      OPENPROJECT_SKIP_DEMO_SEED: "true"
+      USE_PUMA: "true"
+    ports:
+      - "127.0.0.1:8096:80"
+    volumes:
+      - ./assets:/var/openproject/assets
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped

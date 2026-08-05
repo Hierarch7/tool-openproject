@@ -1,0 +1,5 @@
+# Окружения OpenProject на этом хосте (читают /opt/bo-deploy/*.sh)
+PRODUCTION_DIR=/opt/openproject
+PRODUCTION_PORT=8095
+PRODUCTION_HOST=bo.gambit-core.com
+PRODUCTION_HTTPS=true

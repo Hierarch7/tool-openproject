@@ -45,3 +45,5 @@ vendor/bundle
 vendor/hocuspocus
 /public/assets
 /config/frontend_assets.manifest.json
+# Обвязка выката: в образ не входит, а в контексте сборки ломала бы кэш слоёв.
+/deploy
