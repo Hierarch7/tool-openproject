@@ -20,5 +20,11 @@
         ]
       }
     ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npx eslint *)",
+      "Bash(echo \"eslint exit: $?\")"
+    ]
   }
 }
