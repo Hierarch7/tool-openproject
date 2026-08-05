@@ -1,0 +1,78 @@
+name: Deploy OpenProject
+
+# Сборка образа из этого репозитория и выкат на инстансы OpenProject.
+#
+#   пуш в bo-staging → стенд на hy (127.0.0.1:8096)
+#   пуш в bo-prod    → прод
+#   ручной запуск    → с выбором окружения
+#
+# Джобы идут на self-hosted runner'ах в host-режиме: образ собирается на том же
+# хосте, куда потом и катится, поэтому реестр не нужен.
+
+on:
+  push:
+    branches:
+      - bo-staging
+      - bo-prod
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Окружение
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+
+concurrency:
+  group: deploy-bo-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  IMAGE: bo-openproject
+
+jobs:
+  hy:
+    name: bo.hesoyam.biz (hy)
+    runs-on: hy-op
+    timeout-minutes: 180
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Выбрать окружение
+        env:
+          EVENT: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_TARGET: ${{ github.event.inputs.target }}
+        run: |
+          set -eu
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            TARGET="$INPUT_TARGET"
+          elif [ "$REF_NAME" = "bo-prod" ]; then
+            TARGET=production
+          else
+            TARGET=staging
+          fi
+          case "$TARGET" in
+            staging|production) ;;
+            *) echo "неизвестное окружение: '$TARGET'" >&2; exit 2 ;;
+          esac
+          echo "TARGET=$TARGET" >> "$GITHUB_ENV"
+          echo "Окружение: $TARGET"
+
+      - name: Собрать образ
+        run: |
+          set -eu
+          docker build \
+            -f docker/prod/Dockerfile \
+            --target all-in-one \
+            -t "$IMAGE:$GITHUB_SHA" \
+            -t "$IMAGE:$TARGET" \
+            .
+
+      - name: Выкатить
+        run: sudo /opt/bo-deploy/deploy.sh "$TARGET" "$GITHUB_SHA"
+
+      - name: Smoke-проверка
+        run: sudo /opt/bo-deploy/smoke.sh "$TARGET"
