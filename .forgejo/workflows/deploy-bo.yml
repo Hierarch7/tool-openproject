@@ -76,3 +76,29 @@ jobs:
 
       - name: Smoke-проверка
         run: sudo /opt/bo-deploy/smoke.sh "$TARGET"
+
+  gambit:
+    name: bo.gambit-core.com (gambit)
+    runs-on: gambit-op
+    timeout-minutes: 180
+    # Стенда на gambit нет — инстанс участвует только в прод-выкате.
+    if: github.ref_name == 'bo-prod' || github.event.inputs.target == 'production'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Собрать образ
+        run: |
+          set -eu
+          docker build \
+            -f docker/prod/Dockerfile \
+            --target all-in-one \
+            -t "$IMAGE:$GITHUB_SHA" \
+            -t "$IMAGE:production" \
+            .
+
+      - name: Выкатить
+        run: sudo /opt/bo-deploy/deploy.sh production "$GITHUB_SHA"
+
+      - name: Smoke-проверка
+        run: sudo /opt/bo-deploy/smoke.sh production
