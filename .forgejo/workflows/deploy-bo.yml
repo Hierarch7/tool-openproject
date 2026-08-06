@@ -2,8 +2,8 @@ name: Deploy OpenProject
 
 # Сборка образа из этого репозитория и выкат на инстансы OpenProject.
 #
+#   пуш в main       → прод
 #   пуш в bo-staging → стенд на hy (127.0.0.1:8096)
-#   пуш в bo-prod    → прод
 #   ручной запуск    → с выбором окружения
 #
 # Джобы идут на self-hosted runner'ах в host-режиме: образ собирается на том же
@@ -12,8 +12,8 @@ name: Deploy OpenProject
 on:
   push:
     branches:
+      - main
       - bo-staging
-      - bo-prod
   workflow_dispatch:
     inputs:
       target:
@@ -49,7 +49,7 @@ jobs:
           set -eu
           if [ "$EVENT" = "workflow_dispatch" ]; then
             TARGET="$INPUT_TARGET"
-          elif [ "$REF_NAME" = "bo-prod" ]; then
+          elif [ "$REF_NAME" = "main" ]; then
             TARGET=production
           else
             TARGET=staging
@@ -82,7 +82,7 @@ jobs:
     runs-on: gambit-op
     timeout-minutes: 180
     # Стенда на gambit нет — инстанс участвует только в прод-выкате.
-    if: github.ref_name == 'bo-prod' || github.event.inputs.target == 'production'
+    if: github.ref_name == 'main' || github.event.inputs.target == 'production'
 
     steps:
       - uses: actions/checkout@v4

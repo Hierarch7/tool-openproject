@@ -6,7 +6,7 @@ description: 'Полный флоу: ревью дифа → фикс → бра
 
 Выполнить полный цикл: ревью → фикс → браузерная проверка → code/security review → линтеры и тесты → коммит → деплой на прод → итоговый отчёт. Каждый шаг выполняется строго после завершения предыдущего.
 
-Флоу **заканчивается деплоем на прод** через Forgejo Actions на `origin` (`git.gambit-core.com`) — см. Шаг 7.
+Флоу **заканчивается деплоем на прод** через Forgejo Actions на `origin` (`git.gambit-core.com`) — см. Шаг 7. Деплойная ветка — `main`, она же мейнлайн: пуш в неё сразу выкатывает оба прод-инстанса.
 
 Пуш в remote `github` (`Hierarch7/openproject`) и создание PR туда остаются ручными и в этот флоу не входят: CI форка всё равно не запускается (`test-core` гейтится `github.repository_owner == 'opf'`, `continuous-delivery` — `github.repository == 'opf/openproject'`, а `rubocop-core`/`eslint-core`/`erb-lint-core` висят только на `pull_request`).
 
@@ -182,14 +182,16 @@ Ship-специфика:
 
 Сразу после коммитов выполнить деплой — **без остановки и подтверждения** (вызов `/ship` авторизует полный цикл до прода).
 
-Пайплайн: [`.forgejo/workflows/deploy-bo.yml`](../../.forgejo/workflows/deploy-bo.yml) на Forgejo Actions. Push в `bo-prod` на remote **`origin`** (`git.gambit-core.com`, не `github`) запускает два джоба на self-hosted runner'ах: `bo.hesoyam.biz (hy)` и `bo.gambit-core.com (gambit)`. Каждый собирает образ из `docker/prod/Dockerfile` и катит через `/opt/bo-deploy/deploy.sh` + `smoke.sh`.
+Пайплайн: [`.forgejo/workflows/deploy-bo.yml`](../../.forgejo/workflows/deploy-bo.yml) на Forgejo Actions. Push в `main` на remote **`origin`** (`git.gambit-core.com`, не `github`) запускает два джоба на self-hosted runner'ах: `bo.hesoyam.biz (hy)` и `bo.gambit-core.com (gambit)`. Каждый собирает образ из `docker/prod/Dockerfile` и катит через `/opt/bo-deploy/deploy.sh` + `smoke.sh`.
 
-### 7.1 Промоушен в `bo-prod`
+`main` — и мейнлайн, и деплойная ветка: всё, что в неё попадает, немедленно уезжает на оба прод-инстанса. Отдельной ступени между «влито» и «на проде» нет, поэтому Шаги 1–6 обязаны быть зелёными до промоушена.
+
+### 7.1 Промоушен в `main`
 
 ```bash
 WORK_BRANCH=$(git branch --show-current)
-git fetch origin bo-prod
-git switch bo-prod && git pull --ff-only origin bo-prod
+git fetch origin main
+git switch main && git pull --ff-only origin main
 git merge --no-ff "$WORK_BRANCH"
 ```
 
@@ -199,7 +201,7 @@ git merge --no-ff "$WORK_BRANCH"
 ### 7.2 Push и запоминание SHA
 
 ```bash
-git push origin bo-prod
+git push origin main
 DEPLOY_SHA=$(git rev-parse HEAD)
 git switch -   # вернуться на рабочую ветку
 ```
@@ -220,7 +222,7 @@ curl -s -H "Authorization: token $TOKEN" \
 import sys, json
 sha = sys.argv[1]
 for j in json.load(sys.stdin)['workflow_runs']:
-    if j['head_sha'] == sha and j['head_branch'] == 'bo-prod':
+    if j['head_sha'] == sha and j['head_branch'] == 'main':
         print(j['status'], j['name'], j['url'])
 " "$DEPLOY_SHA"
 ```
@@ -228,8 +230,8 @@ for j in json.load(sys.stdin)['workflow_runs']:
 - **Токен не печатать** — ни в выводе команд, ни в отчёте.
 - Ждать в фоне (`run_in_background`) циклом, который завершается, когда оба джоба вышли из `running`/`waiting`. Сборка образа долгая — таймаут джоба в пайплайне 180 минут, опрашивать раз в ~60 секунд.
 - Статус лежит в поле **`status`** (`success` / `failure` / `running` / `waiting` / `skipped`). Поле `conclusion` на этом Forgejo (15.0.5+gitea-1.22.0) всегда `null` — на него не смотреть.
-- Для `bo-prod` **оба** джоба обязаны дойти до `success`. `skipped` у `bo.gambit-core.com (gambit)` штатен только для staging; на проде это признак того, что уехало не в ту ветку.
-- Фильтр `?branch=` API игнорирует — отбирать на своей стороне, причём **по паре `head_sha` + `head_branch`**. Одного SHA мало: если `bo-staging` и `bo-prod` стоят на одном коммите, по `head_sha` вернутся прогоны обеих веток, и прод-джоб легко спутать со staging'овым (где `gambit` штатно `skipped`).
+- Для `main` **оба** джоба обязаны дойти до `success`. `skipped` у `bo.gambit-core.com (gambit)` штатен только для staging; на проде это признак того, что уехало не в ту ветку.
+- Фильтр `?branch=` API игнорирует — отбирать на своей стороне, причём **по паре `head_sha` + `head_branch`**. Одного SHA мало: если `bo-staging` и `main` стоят на одном коммите, по `head_sha` вернутся прогоны обеих веток, и прод-джоб легко спутать со staging'овым (где `gambit` штатно `skipped`).
 
 ### 7.4 При падении деплоя
 
@@ -277,7 +279,7 @@ curl -s --max-time 30 --retry 3 --retry-all-errors https://bo.hesoyam.biz/login 
 - **Коммит (Шаг 6)** — сколько коммитов, короткие хеши, смысловые группы.
 - **Деплой (Шаг 7)** — статус обоих джобов (`bo.hesoyam.biz`, `bo.gambit-core.com`), ссылка на прогон, задеплоенный SHA; что чинилось по ходу, если чинилось. При остановке на конфликте мержа или падении — что именно требуется от пользователя.
 
-В конце строкой — что уехало на прод и в какой ветке (`bo-prod`), плюс напоминание, что рабочая ветка и remote `github` **не запушены**.
+В конце строкой — что уехало на прод и в какой ветке (`main`), плюс напоминание, что рабочая ветка и remote `github` **не запушены**.
 
 ### Часть B — Что сделано функционально
 
