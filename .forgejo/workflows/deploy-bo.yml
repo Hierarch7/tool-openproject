@@ -81,8 +81,11 @@ jobs:
     name: bo.gambit-core.com (gambit)
     runs-on: gambit-op
     timeout-minutes: 180
-    # Стенда на gambit нет — инстанс участвует только в прод-выкате.
-    if: github.ref_name == 'main' || github.event.inputs.target == 'production'
+    # Стенда на gambit нет — инстанс участвует только в прод-выкате. Условие проверяет ещё и
+    # тип события: у workflow_dispatch ref_name это ветка запуска, то есть по умолчанию main,
+    # и без этой оговорки ручной прогон со staging выкатил бы здесь прод (deploy.sh ниже
+    # захардкожен на production).
+    if: (github.event_name == 'push' && github.ref_name == 'main') || github.event.inputs.target == 'production'
 
     steps:
       - uses: actions/checkout@v4
