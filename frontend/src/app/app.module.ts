@@ -195,6 +195,7 @@ import {
   OpWpDatePickerInstanceComponent,
 } from 'core-app/shared/components/datepicker/wp-date-picker-modal/wp-date-picker-instance.component';
 import { TimeEntryTimerService } from 'core-app/shared/components/time_entries/services/time-entry-timer.service';
+import { WorkPackagesRealtimeService } from 'core-app/core/realtime/work-packages-realtime.service';
 import { WorkPackageFullCopyEntryComponent } from 'core-app/features/work-packages/routing/wp-full-copy/wp-full-copy-entry.component';
 import { WorkPackageFullCreateEntryComponent } from 'core-app/features/work-packages/routing/wp-full-create/wp-full-create-entry.component';
 import { WorkPackageFullViewEntryComponent } from 'core-app/features/work-packages/routing/wp-full-view/wp-full-view-entry.component';
@@ -212,6 +213,7 @@ export function initializeServices(injector:Injector) {
     const contextMenu = injector.get(OPContextMenuService);
     const currentProject = injector.get(CurrentProjectService);
     const timeEntryTimerService = injector.get(TimeEntryTimerService);
+    const workPackagesRealtime = injector.get(WorkPackagesRealtimeService);
 
     // Conditionally add the Revit Add-In settings button
     injector.get(RevitAddInSettingsButtonService);
@@ -221,6 +223,8 @@ export function initializeServices(injector:Injector) {
       contextMenu.register();
       timeEntryTimerService.initialize();
       currentProject.detect();
+      // Reads the project detect() just resolved, so it has to come after it
+      workPackagesRealtime.initialize();
     };
     runOnRenderAndLoad();
 

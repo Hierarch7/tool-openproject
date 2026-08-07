@@ -23,4 +23,12 @@
     ProxyPass http://<%= ENV.fetch("APP_HOST", "127.0.0.1") %>:1234/ upgrade=websocket
     ProxyPassReverse http://<%= ENV.fetch("APP_HOST", "127.0.0.1") %>:1234/
   </Location>
+
+  <%# Живое обновление задач. Без upgrade=websocket запрос уходит на Puma как обычный HTTP,
+      апгрейд теряется здесь — то есть уже за nginx, который передал его корректно, — и
+      ActionCable молча уходит в переподключения. %>
+  <Location <%= location %>/cable>
+    ProxyPass http://<%= ENV.fetch("APP_HOST", "127.0.0.1") %>:8080<%= location %>/cable upgrade=websocket retry=0
+    ProxyPassReverse http://<%= ENV.fetch("APP_HOST", "127.0.0.1") %>:8080<%= location %>/cable
+  </Location>
 </VirtualHost>

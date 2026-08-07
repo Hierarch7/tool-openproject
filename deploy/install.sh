@@ -47,5 +47,5 @@ echo "           конфиг и unit runner'а (systemd перечитан)."
 echo
 echo "Намеренно НЕ сделано:"
 echo "  * runner не перезапущен  — 'systemctl restart forgejo-runner-op', но НЕ во время выката"
-echo "  * nginx не тронут        — блок из deploy/nginx/hocuspocus-location.conf вставляется в bo.conf вручную"
+echo "  * nginx не тронут        — блоки из deploy/nginx/*.conf (hocuspocus, action-cable) вставляются в bo.conf вручную"
 echo "  * compose не перезаписан — deploy/compose/*.yml это эталон для сверки, а не для копирования"
