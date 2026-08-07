@@ -45,6 +45,10 @@ Rails.application.routes.draw do
 
   get "/api/docs" => "api_docs#index"
 
+  # Real-time push. Behind a reverse proxy this path needs the WebSocket upgrade
+  # headers forwarded, see deploy/nginx/action-cable-location.conf.
+  mount ActionCable.server => "/cable"
+
   mount API::Mcp => "/mcp"
 
   # Redirect deprecated issue links to new work packages uris

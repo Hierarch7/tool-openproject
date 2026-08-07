@@ -217,7 +217,7 @@ TOKEN=$(printf 'protocol=https\nhost=git.gambit-core.com\n\n' \
   | git credential fill | sed -n 's/^password=//p')
 
 curl -s -H "Authorization: token $TOKEN" \
-  "https://git.gambit-core.com/api/v1/repos/hierarch/canban/actions/tasks?limit=20" \
+  "https://git.gambit-core.com/api/v1/repos/devteam/canban/actions/tasks?limit=20" \
 | python3 -c "
 import sys, json
 sha = sys.argv[1]

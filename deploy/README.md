@@ -16,7 +16,7 @@
 ## Как выкатывается
 
 Пайплайн [`.forgejo/workflows/deploy-bo.yml`](../.forgejo/workflows/deploy-bo.yml) на своём Forgejo
-(`git.gambit-core.com/hierarch/canban`):
+(`git.gambit-core.com/devteam/canban`):
 
 ```
 push в main       → прод на обоих инстансах
@@ -43,6 +43,7 @@ etc/sudoers.d/forgejo-runner-op  → /etc/sudoers.d/            грант runne
 etc/forgejo-runner/op-config.yaml→ /etc/forgejo-runner/
 etc/systemd/*.service            → /etc/systemd/system/
 nginx/hocuspocus-location.conf   → вставляется в bo.conf ВРУЧНУЮ
+nginx/action-cable-location.conf → вставляется в bo.conf ВРУЧНУЮ
 compose/*.yml                    → эталон для сверки, НЕ для копирования
 ```
 
