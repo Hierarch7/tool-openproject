@@ -18,6 +18,15 @@
             "command": "/home/user/.local/bin/graphify hook-guard read"
           }
         ]
+      },
+      {
+        "matcher": "Read|Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/user/.local/bin/graphify hook-guard read --strict"
+          }
+        ]
       }
     ]
   },
@@ -25,6 +34,29 @@
     "allow": [
       "Bash(npx eslint *)",
       "Bash(echo \"eslint exit: $?\")"
+    ],
+    "deny": [
+      "Bash(git commit --amend:*)",
+      "Bash(git commit --no-verify:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(sudo:*)",
+      "Bash(rm -rf:*)",
+      "Bash(rm -rf *)",
+      "Bash(rm -rf /*)",
+      "Bash(ssh gambit \"*vim *\")",
+      "Bash(ssh gambit \"*vi *\")",
+      "Bash(ssh gambit \"*nano *\")",
+      "Bash(ssh gambit \"*rm *\")",
+      "Bash(ssh gambit \"*rm -rf*\")",
+      "Bash(ssh gambit \"*sed -i*\")",
+      "Bash(ssh gambit \"*chmod *\")",
+      "Bash(ssh gambit \"*chown *\")",
+      "Bash(ssh gambit \"sudo*\")",
+      "Bash(ssh gambit \"systemctl start*\")",
+      "Bash(ssh gambit \"systemctl stop*\")",
+      "Bash(ssh gambit \"systemctl disable*\")"
     ]
   }
 }

@@ -147,3 +147,10 @@ acme.json
 
 # Generated seeders crowdin source file
 **/config/locales/en.seeders.yml
+
+# pipelines:graphify start
+# локальный граф знаний — пересобирается post-commit хуком graphify
+graphify-out/
+.claude/settings.json.graphify-bak
+.claude/scheduled_tasks.lock
+# pipelines:graphify end
