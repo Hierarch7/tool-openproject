@@ -1,0 +1,94 @@
+{
+  "lock_version": 1,
+  "pipelines_version": "0.1.0",
+  "files": {
+    ".claude/settings.json": {
+      "strategy": "json-merge",
+      "owned": {
+        "claude-core": {
+          "permissions.deny": [
+            "\"Bash(git commit --amend:*)\"",
+            "\"Bash(git commit --no-verify:*)\"",
+            "\"Bash(git push --force:*)\"",
+            "\"Bash(git push -f:*)\"",
+            "\"Bash(git reset --hard:*)\"",
+            "\"Bash(sudo:*)\"",
+            "\"Bash(rm -rf:*)\"",
+            "\"Bash(rm -rf *)\"",
+            "\"Bash(rm -rf /*)\"",
+            "\"Bash(ssh gambit \\\"*vim *\\\")\"",
+            "\"Bash(ssh gambit \\\"*vi *\\\")\"",
+            "\"Bash(ssh gambit \\\"*nano *\\\")\"",
+            "\"Bash(ssh gambit \\\"*rm *\\\")\"",
+            "\"Bash(ssh gambit \\\"*rm -rf*\\\")\"",
+            "\"Bash(ssh gambit \\\"*sed -i*\\\")\"",
+            "\"Bash(ssh gambit \\\"*chmod *\\\")\"",
+            "\"Bash(ssh gambit \\\"*chown *\\\")\"",
+            "\"Bash(ssh gambit \\\"sudo*\\\")\"",
+            "\"Bash(ssh gambit \\\"systemctl start*\\\")\"",
+            "\"Bash(ssh gambit \\\"systemctl stop*\\\")\"",
+            "\"Bash(ssh gambit \\\"systemctl disable*\\\")\""
+          ]
+        },
+        "graphify-wiring": {
+          "hooks.PreToolUse": [
+            "{\"hooks\": [{\"command\": \"/home/user/.local/bin/graphify hook-guard search\", \"type\": \"command\"}], \"matcher\": \"Bash|Grep\"}",
+            "{\"hooks\": [{\"command\": \"/home/user/.local/bin/graphify hook-guard read --strict\", \"type\": \"command\"}], \"matcher\": \"Read|Glob\"}"
+          ]
+        }
+      }
+    },
+    ".claude/settings.local.json": {
+      "strategy": "json-merge",
+      "owned": {
+        "claude-secrets-deny": {
+          "permissions.deny": [
+            "\"Read(**/id_rsa*)\"",
+            "\"Read(**/*.pem)\"",
+            "\"Read(**/*.key)\"",
+            "\"Read(**/*.p12)\"",
+            "\"Read(**/*.pfx)\"",
+            "\"Read(**/.npmrc)\"",
+            "\"Read(**/.pypirc)\"",
+            "\"Read(**/auth.json)\"",
+            "\"Read(**/*credentials.json)\"",
+            "\"Read(**/*credentials.yml)\"",
+            "\"Read(**/*credentials.yaml)\"",
+            "\"Read(**/.secrets/**)\"",
+            "\"Read(**/secrets.json)\"",
+            "\"Read(**/secrets.yml)\"",
+            "\"Read(**/secrets.yaml)\"",
+            "\"Read(**/*token.json)\"",
+            "\"Read(**/*tokens.json)\"",
+            "\"Read(./secrets/**)\"",
+            "\"Bash(scp:*)\""
+          ]
+        }
+      }
+    },
+    ".gitignore": {
+      "strategy": "markers",
+      "blocks": {
+        "graphify": "d2e7c56fbf7dc5cf384354282f33795c9c464c34b6b445bb4b321e874d92d8e1"
+      },
+      "modules": [
+        "graphify-wiring"
+      ]
+    },
+    "CLAUDE.md": {
+      "strategy": "markers",
+      "blocks": {
+        "claude-core": "a0dfd7087ddc9743446b5354d1b4c525e06f2783aeb0a03980528e17f9ef3a5f",
+        "deploy": "fdc36b2f86573a0a911679fb7dbfdc27233e9336df5fe330e82a7e22a02fbe63",
+        "common-commands": "2bbeb1fdc45576c76cd55fc1fcf85a1f6defecde882145fc97aaa1ccd7e035ce",
+        "graphify": "df30b2a4fe90825b3cf07f7fb2e4d319f00d711979030f33ed54ae2be85e9e53"
+      },
+      "modules": [
+        "claude-core",
+        "claude-deploy",
+        "cmd-common",
+        "graphify-wiring"
+      ]
+    }
+  }
+}

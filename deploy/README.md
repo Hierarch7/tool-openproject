@@ -16,7 +16,7 @@
 ## Как выкатывается
 
 Пайплайн [`.forgejo/workflows/deploy-bo.yml`](../.forgejo/workflows/deploy-bo.yml) на своём Forgejo
-(`git.gambit-core.com/devteam/canban`):
+(`git.processing.systems/devteam/canban`):
 
 ```
 push в main       → прод на обоих инстансах

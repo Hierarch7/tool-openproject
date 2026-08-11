@@ -6,7 +6,7 @@ description: 'Полный флоу: ревью дифа → фикс → бра
 
 Выполнить полный цикл: ревью → фикс → браузерная проверка → code/security review → линтеры и тесты → коммит → деплой на прод → итоговый отчёт. Каждый шаг выполняется строго после завершения предыдущего.
 
-Флоу **заканчивается деплоем на прод** через Forgejo Actions на `origin` (`git.gambit-core.com`) — см. Шаг 7. Деплойная ветка — `main`, она же мейнлайн: пуш в неё сразу выкатывает оба прод-инстанса.
+Флоу **заканчивается деплоем на прод** через Forgejo Actions на `origin` (`git.processing.systems`) — см. Шаг 7. Деплойная ветка — `main`, она же мейнлайн: пуш в неё сразу выкатывает оба прод-инстанса.
 
 Пуш в remote `github` (`Hierarch7/openproject`) и создание PR туда остаются ручными и в этот флоу не входят: CI форка всё равно не запускается (`test-core` гейтится `github.repository_owner == 'opf'`, `continuous-delivery` — `github.repository == 'opf/openproject'`, а `rubocop-core`/`eslint-core`/`erb-lint-core` висят только на `pull_request`).
 
@@ -182,7 +182,7 @@ Ship-специфика:
 
 Сразу после коммитов выполнить деплой — **без остановки и подтверждения** (вызов `/ship` авторизует полный цикл до прода).
 
-Пайплайн: [`.forgejo/workflows/deploy-bo.yml`](../../.forgejo/workflows/deploy-bo.yml) на Forgejo Actions. Push в `main` на remote **`origin`** (`git.gambit-core.com`, не `github`) запускает два джоба на self-hosted runner'ах: `bo.hesoyam.biz (hy)` и `bo.gambit-core.com (gambit)`. Каждый собирает образ из `docker/prod/Dockerfile` и катит через `/opt/bo-deploy/deploy.sh` + `smoke.sh`.
+Пайплайн: [`.forgejo/workflows/deploy-bo.yml`](../../.forgejo/workflows/deploy-bo.yml) на Forgejo Actions. Push в `main` на remote **`origin`** (`git.processing.systems`, не `github`) запускает два джоба на self-hosted runner'ах: `bo.hesoyam.biz (hy)` и `bo.gambit-core.com (gambit)`. Каждый собирает образ из `docker/prod/Dockerfile` и катит через `/opt/bo-deploy/deploy.sh` + `smoke.sh`.
 
 `main` — и мейнлайн, и деплойная ветка: всё, что в неё попадает, немедленно уезжает на оба прод-инстанса. Отдельной ступени между «влито» и «на проде» нет, поэтому Шаги 1–6 обязаны быть зелёными до промоушена.
 
@@ -213,11 +213,11 @@ git switch -   # вернуться на рабочую ветку
 `gh` здесь **не работает** — это Forgejo, а не GitHub. Токен берётся из git-credentials, запрос идёт в Forgejo API.
 
 ```bash
-TOKEN=$(printf 'protocol=https\nhost=git.gambit-core.com\n\n' \
+TOKEN=$(printf 'protocol=https\nhost=git.processing.systems\n\n' \
   | git credential fill | sed -n 's/^password=//p')
 
 curl -s -H "Authorization: token $TOKEN" \
-  "https://git.gambit-core.com/api/v1/repos/devteam/canban/actions/tasks?limit=20" \
+  "https://git.processing.systems/api/v1/repos/devteam/canban/actions/tasks?limit=20" \
 | python3 -c "
 import sys, json
 sha = sys.argv[1]

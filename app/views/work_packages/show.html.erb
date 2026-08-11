@@ -40,5 +40,10 @@ See COPYRIGHT and LICENSE files for more details.
 <% end %>
 
 <% content_for :content_body do %>
-  <%= render WorkPackages::FullView::ShowComponent.new(id: work_package.display_id, tab: params[:tab] || "activity") %>
+  <%= render WorkPackages::FullView::ShowComponent.new(
+        id: work_package.display_id,
+        tab: params[:tab] || "activity",
+        query_id: params[:query_id],
+        query_props: params[:query_props]
+      ) %>
 <% end %>

@@ -1046,6 +1046,9 @@ en:
       message_view_spent_time: "Show spent time for this work package"
       message_work_package_read_only: "Work package is locked in this status. No attribute other than status can be altered."
       message_work_package_status_blocked: "Work package status is not writable due to closed status and closed version being assigned."
+      navigation:
+        next: "Next work package"
+        previous: "Previous work package"
       no_results:
         description: Either none have been created or all work packages are filtered out.
         title: No work packages to display.

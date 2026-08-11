@@ -1,0 +1,30 @@
+# Форк OpenProject (Ruby + Angular). Профиля под этот стек нет — набор задан явно.
+# CI-модули НЕ подключены намеренно: в .github/workflows лежит 31 upstream-воркфлоу.
+# editor-base тоже нет: .editorconfig приходит из upstream OpenProject.
+# Правила стека и шаг деплоя с промоушеном в main адаптируются внутри проекта.
+modules = [
+  "claude-core",
+  "claude-secrets-deny",
+  "claude-deploy",
+  "cmd-common",
+  "graphify-wiring",
+]
+
+[vars]
+project_title = "OpenProject (canban)"
+test_frameworks = "тест (RSpec)"
+
+deploy_target = "forgejo"
+forgejo_host = "git.processing.systems"
+forgejo_repo = "devteam/canban"
+forgejo_runner_unit = "forgejo-runner-op"
+ci_workflow_dir = ".forgejo/workflows"
+deploy_workflow = "deploy-bo.yml"
+ssh_host = "gambit"
+
+cmd_dev = "bin/compose up"
+cmd_test_all = "bundle exec rspec"
+cmd_test_file = "bundle exec rspec spec/path/to/relevant_spec.rb"
+cmd_format = "bin/dirty-rubocop --uncommitted"
+cmd_front_lint = "cd frontend && npx eslint <изменённые файлы>"
+cmd_front_test = "cd frontend && npm test"

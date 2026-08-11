@@ -71,7 +71,11 @@ export class WpTabsComponent implements OnInit {
 
         return ({
           ...tab,
-          path: this.pathHelper.genericWorkPackagePath(this.currentProject.identifier, this.workPackage.displayId, tab.id),
+          // Keep the query string, as every other link into the full view does: it
+          // carries the list (?query_id / ?query_props) the work package was opened
+          // from, which the previous/next navigation walks.
+          path: this.pathHelper.genericWorkPackagePath(this.currentProject.identifier, this.workPackage.displayId, tab.id)
+            + window.location.search,
         });
       });
   }

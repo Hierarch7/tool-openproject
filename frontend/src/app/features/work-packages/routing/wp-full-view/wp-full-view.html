@@ -11,6 +11,47 @@
           <wp-subject [workPackage]="workPackage" />
         </div>
         <ul id="toolbar-items" class="toolbar-items hide-when-print wp-show--header-container--toolbar-items">
+          <li class="toolbar-item op-wp-neighbours" data-test-selector="op-wp-neighbours">
+            @if (previousWorkPackagePath) {
+              <a class="button toolbar-icon"
+                [href]="previousWorkPackagePath"
+                [attr.title]="text.fullView.previousWorkPackage"
+                [attr.aria-label]="text.fullView.previousWorkPackage"
+                data-test-selector="op-wp-neighbours--previous"
+                data-turbo="false">
+                <op-icon icon-classes="button--icon icon-arrow-left2" />
+              </a>
+            } @else {
+              <button type="button"
+                class="button toolbar-icon"
+                disabled
+                [attr.title]="text.fullView.previousWorkPackage"
+                [attr.aria-label]="text.fullView.previousWorkPackage">
+                <op-icon icon-classes="button--icon icon-arrow-left2" />
+              </button>
+            }
+            <span class="op-wp-neighbours--id"
+              data-test-selector="op-wp-neighbours--id"
+              [textContent]="workPackage.formattedId"></span>
+            @if (nextWorkPackagePath) {
+              <a class="button toolbar-icon"
+                [href]="nextWorkPackagePath"
+                [attr.title]="text.fullView.nextWorkPackage"
+                [attr.aria-label]="text.fullView.nextWorkPackage"
+                data-test-selector="op-wp-neighbours--next"
+                data-turbo="false">
+                <op-icon icon-classes="button--icon icon-arrow-right2" />
+              </a>
+            } @else {
+              <button type="button"
+                class="button toolbar-icon"
+                disabled
+                [attr.title]="text.fullView.nextWorkPackage"
+                [attr.aria-label]="text.fullView.nextWorkPackage">
+                <op-icon icon-classes="button--icon icon-arrow-right2" />
+              </button>
+            }
+          </li>
           <li class="toolbar-item hidden-for-tablet">
             <wp-create-button [routedFromAngular]="routedFromAngular" />
           </li>

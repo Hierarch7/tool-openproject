@@ -44,6 +44,8 @@ import { populateInputsFromDataset } from 'core-app/shared/components/dataset-in
       [workPackageId]="workPackageId"
       [activeTab]="activeTab"
       [routedFromAngular]="routedFromAngular"
+      [previousWorkPackagePath]="previousWorkPackagePath"
+      [nextWorkPackagePath]="nextWorkPackagePath"
     ></op-wp-full-view>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,6 +56,11 @@ export class WorkPackageFullViewEntryComponent {
   @Input() workPackageId:string;
   @Input() activeTab:string;
   @Input() routedFromAngular:boolean;
+
+  // Neighbours within the list the user came from, computed by Rails. Null when
+  // there is no such work package (first or last row).
+  @Input() previousWorkPackagePath:string|null = null;
+  @Input() nextWorkPackagePath:string|null = null;
 
   constructor() {
     populateInputsFromDataset(this);
