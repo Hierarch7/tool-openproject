@@ -76,6 +76,11 @@ export class KeyboardShortcutService {
     's': this.accessKey('quickSearch'),
     'k': () => this.focusPrevItem(),
     'j': () => this.focusNextItem(),
+
+    // Mirror j/k for the work package full view, where there is no list to focus
+    // but a previous/next work package to walk to
+    'g k': () => this.goToNeighbourWorkPackage('previous'),
+    'g j': () => this.goToNeighbourWorkPackage('next'),
   };
 
   /**
@@ -119,6 +124,20 @@ export class KeyboardShortcutService {
         window.location.href = (this.PathHelper[action] as (identifier:string|null) => string)(projectIdentifier);
       }
     };
+  }
+
+  /**
+   * Follow the previous/next arrow of the work package full view. Silently does
+   * nothing off that page, and on its first respectively last work package, where
+   * the arrow is rendered as a disabled button rather than a link.
+   */
+  goToNeighbourWorkPackage(direction:'previous'|'next'):void {
+    const link = document
+      .querySelector<HTMLAnchorElement>(`a[data-test-selector="op-wp-neighbours--${direction}"]`);
+
+    if (link) {
+      this.clickLink(link);
+    }
   }
 
   clickLink(link:HTMLAnchorElement):void {

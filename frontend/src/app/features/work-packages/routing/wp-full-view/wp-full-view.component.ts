@@ -26,7 +26,7 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Input, OnInit, inject } from '@angular/core';
 import { StateService } from '@uirouter/core';
 import { CurrentUserService } from 'core-app/core/current-user/current-user.service';
 import { TabDefinition } from 'core-app/shared/components/tabs/tab.interface';
@@ -59,6 +59,13 @@ export class WorkPackagesFullViewComponent extends WorkPackageSingleViewBase imp
   readonly currentUserService = inject(CurrentUserService);
   readonly cdRef = inject(ChangeDetectorRef);
 
+  // Paths of the surrounding work packages, resolved by Rails from the list
+  // (?query_id / ?query_props) the work package was opened from. Null on the
+  // first respectively last work package of that list.
+  @Input() previousWorkPackagePath:string|null = null;
+
+  @Input() nextWorkPackagePath:string|null = null;
+
   // Watcher properties
   public isWatched:boolean;
 
@@ -75,6 +82,8 @@ export class WorkPackagesFullViewComponent extends WorkPackageSingleViewBase imp
   public text = {
     fullView: {
       buttonMore: this.i18n.t('js.button_more'),
+      previousWorkPackage: this.i18n.t('js.work_packages.navigation.previous'),
+      nextWorkPackage: this.i18n.t('js.work_packages.navigation.next'),
     },
   };
 

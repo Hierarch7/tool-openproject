@@ -54,6 +54,18 @@
     grid-area: toolbar
     margin-bottom: 0
 
+// Previous / next navigation with the work package id sitting between the arrows
+.op-wp-neighbours
+  display: flex
+  align-items: center
+  gap: 4px
+
+  &--id
+    font-weight: bold
+    // Keeps the arrows from shifting when the id grows a digit
+    font-variant-numeric: tabular-nums
+    white-space: nowrap
+
 // Subject field
 .wp-new--subject-wrapper
   .inline-edit--active-field.subject
