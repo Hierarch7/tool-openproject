@@ -6,12 +6,18 @@
 
 ## Где что работает
 
-| Инстанс | Хост | Каталог | Порт | Стенд |
-|---|---|---|---|---|
-| bo.hesoyam.biz | hy (185.189.44.137) | `/opt/openproject` | 8095 | `/opt/openproject-staging`, 8096 |
-| bo.gambit-core.com | gambit (84.32.186.99) | `/opt/openproject` | 8095 | нет |
+| Инстанс | Хост | Каталог | Порт | Окружение | Стенд |
+|---|---|---|---|---|---|
+| bo.hesoyam.biz | hy (185.189.44.137) | `/opt/openproject` | 8095 | `production` | `/opt/openproject-staging`, 8096 |
+| bo.processing.systems | gambit (84.32.186.99) | `/opt/openproject-processing` | 8097 | `processing` | нет |
 
 Оба — OpenProject из этого репозитория, образ `bo-openproject:<sha>`, PostgreSQL 17.
+Домен `bo.processing.systems` проксируется через Cloudflare.
+
+`bo.gambit-core.com` (gambit, `/opt/openproject`, 8095) закрыт: DNS-запись снята, из пайплайна
+убран, его проект `tech` переехал на `bo.processing.systems` вместе с историей и вложениями.
+Контейнеры `op-*` на хосте пока стоят — поэтому `compose/gambit-production.yml` ещё лежит здесь,
+а compose-проект нового инстанса называется `op-processing`, а не `op`.
 
 ## Как выкатывается
 
@@ -44,6 +50,7 @@ etc/forgejo-runner/op-config.yaml→ /etc/forgejo-runner/
 etc/systemd/*.service            → /etc/systemd/system/
 nginx/hocuspocus-location.conf   → вставляется в bo.conf ВРУЧНУЮ
 nginx/action-cable-location.conf → вставляется в bo.conf ВРУЧНУЮ
+nginx/bo-processing.vhost.conf   → /etc/nginx/sites-available/bo-processing.conf ВРУЧНУЮ
 compose/*.yml                    → эталон для сверки, НЕ для копирования
 ```
 

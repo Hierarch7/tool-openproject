@@ -78,13 +78,13 @@ jobs:
         run: sudo /opt/bo-deploy/smoke.sh "$TARGET"
 
   gambit:
-    name: bo.gambit-core.com (gambit)
+    name: bo.processing.systems (gambit)
     runs-on: gambit-op
     timeout-minutes: 180
-    # Стенда на gambit нет — инстанс участвует только в прод-выкате. Условие проверяет ещё и
+    # Стенда на gambit нет — хост участвует только в прод-выкате. Условие проверяет ещё и
     # тип события: у workflow_dispatch ref_name это ветка запуска, то есть по умолчанию main,
     # и без этой оговорки ручной прогон со staging выкатил бы здесь прод (deploy.sh ниже
-    # захардкожен на production).
+    # захардкожен на processing).
     if: (github.event_name == 'push' && github.ref_name == 'main') || github.event.inputs.target == 'production'
 
     steps:
@@ -101,7 +101,7 @@ jobs:
             .
 
       - name: Выкатить
-        run: sudo /opt/bo-deploy/deploy.sh production "$GITHUB_SHA"
+        run: sudo /opt/bo-deploy/deploy.sh processing "$GITHUB_SHA"
 
       - name: Smoke-проверка
-        run: sudo /opt/bo-deploy/smoke.sh production
+        run: sudo /opt/bo-deploy/smoke.sh processing
