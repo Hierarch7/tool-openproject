@@ -54,6 +54,10 @@
       "Bash(ssh gambit \"*chmod *\")",
       "Bash(ssh gambit \"*chown *\")",
       "Bash(ssh gambit \"sudo*\")",
+      "Bash(ssh gambit \"*dd if=*\")",
+      "Bash(ssh gambit \"*mkfs*\")",
+      "Bash(ssh gambit \"*docker system prune*\")",
+      "Bash(ssh gambit \"*docker volume rm*\")",
       "Bash(ssh gambit \"systemctl start*\")",
       "Bash(ssh gambit \"systemctl stop*\")",
       "Bash(ssh gambit \"systemctl disable*\")"
