@@ -1,9 +1,4 @@
 # Окружения OpenProject на этом хосте (читают /opt/bo-deploy/*.sh)
-PRODUCTION_DIR=/opt/openproject
-PRODUCTION_PORT=8095
-PRODUCTION_HOST=bo.gambit-core.com
-PRODUCTION_HTTPS=true
-
 PROCESSING_DIR=/opt/openproject-processing
 PROCESSING_PORT=8097
 PROCESSING_HOST=bo.processing.systems

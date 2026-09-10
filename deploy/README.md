@@ -9,15 +9,15 @@
 | Инстанс | Хост | Каталог | Порт | Окружение | Стенд |
 |---|---|---|---|---|---|
 | bo.hesoyam.biz | hy (185.189.44.137) | `/opt/openproject` | 8095 | `production` | `/opt/openproject-staging`, 8096 |
-| bo.gambit-core.com | gambit (84.32.186.99) | `/opt/openproject` | 8095 | `production` | нет |
 | bo.processing.systems | gambit (84.32.186.99) | `/opt/openproject-processing` | 8097 | `processing` | нет |
 
-Все — OpenProject из этого репозитория, образ `bo-openproject:<sha>`, PostgreSQL 17.
+Оба — OpenProject из этого репозитория, образ `bo-openproject:<sha>`, PostgreSQL 17.
+Домен `bo.processing.systems` проксируется через Cloudflare.
 
-Два инстанса на gambit друг о друге ничего не знают: разные compose-проекты (`op` и
-`op-processing`), разные БД, разные тома. Общий у них только образ — джоба собирает его один раз
-и катит последовательно в оба окружения. `bo.processing.systems` заведён с нуля (пустая БД),
-домен проксируется через Cloudflare.
+`bo.gambit-core.com` (gambit, `/opt/openproject`, 8095) закрыт: DNS-запись снята, из пайплайна
+убран, его проект `tech` переехал на `bo.processing.systems` вместе с историей и вложениями.
+Контейнеры `op-*` на хосте пока стоят — поэтому `compose/gambit-production.yml` ещё лежит здесь,
+а compose-проект нового инстанса называется `op-processing`, а не `op`.
 
 ## Как выкатывается
 
@@ -25,7 +25,7 @@
 (`git.processing.systems/devteam/canban`):
 
 ```
-push в main       → прод на всех трёх инстансах (на gambit — оба, последовательно)
+push в main       → прод на обоих инстансах
 push в bo-staging → стенд на hy
 workflow_dispatch → с выбором окружения
 ```
