@@ -246,5 +246,23 @@ RSpec.describe ApplicationController do
         expect(response).to redirect_to(signin_path(back_url: "http://test.host/projects"))
       end
     end
+
+    context "when the request comes from a Turbo Frame" do
+      before { request.headers["Turbo-Frame"] = "op-header-project-frame" }
+
+      it "redirects to signin with the embedding page as back_url" do
+        request.env["HTTP_REFERER"] = "http://test.host/projects/demo"
+
+        get :index
+
+        expect(response).to redirect_to(signin_path(back_url: "http://test.host/projects/demo"))
+      end
+
+      it "redirects to signin without back_url when there is no referer" do
+        get :index
+
+        expect(response).to redirect_to(signin_path)
+      end
+    end
   end
 end

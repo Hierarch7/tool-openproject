@@ -428,6 +428,10 @@ class ApplicationController < ActionController::Base
   end
 
   def login_back_url
+    # A Turbo Frame request fetches a layout-less fragment: returning there after login
+    # would render it as a bare page. Return to the page embedding the frame instead.
+    return request.referer if turbo_frame_request?
+
     # Extract only the basic url parameters on non-GET requests
     if request.get?
       # rely on url_for to fill in the parameters of the current request
