@@ -130,7 +130,7 @@ Correctness first, minimal diff second, tests third, reviewability always.
 # 2. Пуш в Forgejo — запускает деплой автоматически
 git push origin main
 # 3. Статус деплоя — по логу раннера
-ssh gambit "sudo journalctl -u forgejo-runner-op -n 40 --no-pager"
+ssh s01 "sudo journalctl -u forgejo-runner-op -n 40 --no-pager"
 ```
 <!-- pipelines:deploy end -->
 

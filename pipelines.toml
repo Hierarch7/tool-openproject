@@ -20,7 +20,7 @@ forgejo_repo = "devteam/canban"
 forgejo_runner_unit = "forgejo-runner-op"
 ci_workflow_dir = ".forgejo/workflows"
 deploy_workflow = "deploy-bo.yml"
-ssh_host = "gambit"
+ssh_host = "s01"
 
 cmd_dev = "bin/compose up"
 cmd_test_all = "bundle exec rspec"

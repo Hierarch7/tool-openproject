@@ -16,18 +16,18 @@
             "\"Bash(rm -rf:*)\"",
             "\"Bash(rm -rf *)\"",
             "\"Bash(rm -rf /*)\"",
-            "\"Bash(ssh gambit \\\"*vim *\\\")\"",
-            "\"Bash(ssh gambit \\\"*vi *\\\")\"",
-            "\"Bash(ssh gambit \\\"*nano *\\\")\"",
-            "\"Bash(ssh gambit \\\"*rm *\\\")\"",
-            "\"Bash(ssh gambit \\\"*rm -rf*\\\")\"",
-            "\"Bash(ssh gambit \\\"*sed -i*\\\")\"",
-            "\"Bash(ssh gambit \\\"*chmod *\\\")\"",
-            "\"Bash(ssh gambit \\\"*chown *\\\")\"",
-            "\"Bash(ssh gambit \\\"sudo*\\\")\"",
-            "\"Bash(ssh gambit \\\"systemctl start*\\\")\"",
-            "\"Bash(ssh gambit \\\"systemctl stop*\\\")\"",
-            "\"Bash(ssh gambit \\\"systemctl disable*\\\")\""
+            "\"Bash(ssh s01 \\\"*vim *\\\")\"",
+            "\"Bash(ssh s01 \\\"*vi *\\\")\"",
+            "\"Bash(ssh s01 \\\"*nano *\\\")\"",
+            "\"Bash(ssh s01 \\\"*rm *\\\")\"",
+            "\"Bash(ssh s01 \\\"*rm -rf*\\\")\"",
+            "\"Bash(ssh s01 \\\"*sed -i*\\\")\"",
+            "\"Bash(ssh s01 \\\"*chmod *\\\")\"",
+            "\"Bash(ssh s01 \\\"*chown *\\\")\"",
+            "\"Bash(ssh s01 \\\"sudo*\\\")\"",
+            "\"Bash(ssh s01 \\\"systemctl start*\\\")\"",
+            "\"Bash(ssh s01 \\\"systemctl stop*\\\")\"",
+            "\"Bash(ssh s01 \\\"systemctl disable*\\\")\""
           ]
         },
         "graphify-wiring": {
@@ -79,7 +79,7 @@
       "strategy": "markers",
       "blocks": {
         "claude-core": "a0dfd7087ddc9743446b5354d1b4c525e06f2783aeb0a03980528e17f9ef3a5f",
-        "deploy": "fdc36b2f86573a0a911679fb7dbfdc27233e9336df5fe330e82a7e22a02fbe63",
+        "deploy": "b598c1f74fe9aea8c17e8af6618a6080e79a1e50748d31bacc3170498a2bd253",
         "common-commands": "2bbeb1fdc45576c76cd55fc1fcf85a1f6defecde882145fc97aaa1ccd7e035ce",
         "graphify": "df30b2a4fe90825b3cf07f7fb2e4d319f00d711979030f33ed54ae2be85e9e53"
       },
