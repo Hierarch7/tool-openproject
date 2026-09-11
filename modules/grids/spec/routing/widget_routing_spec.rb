@@ -192,4 +192,22 @@ RSpec.describe Grids::WidgetController do
       end
     end
   end
+
+  describe "team_performance routing" do
+    describe "GET #show" do
+      it do
+        expect(get("/projects/my-project/widgets/team_performance"))
+          .to route_to(controller: "grids/widgets/team_performances", action: "show", project_id: "my-project")
+      end
+    end
+  end
+
+  describe "team_performance named routing" do
+    describe "GET #show" do
+      it do
+        expect(get(project_widgets_team_performance_path("my-project")))
+          .to route_to(controller: "grids/widgets/team_performances", action: "show", project_id: "my-project")
+      end
+    end
+  end
 end

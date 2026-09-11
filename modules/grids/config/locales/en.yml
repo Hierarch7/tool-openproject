@@ -44,3 +44,33 @@ en:
         no_results: "There are no visible children."
         title: "Subitems"
         view_all_subitems: "View all subitems"
+      team_performance:
+        caption: >-
+          Done: moved to a done status within the selected period, credited to whoever was assigned at that moment.
+          In progress and blocked: right now.
+        columns:
+          blocked: "Blocked"
+          done: "Done"
+          in_progress: "In progress"
+        configure_statuses: "Configure statuses"
+        empty:
+          description: "Nothing was done within this period, and nothing is in progress or blocked."
+          heading: "No work to show"
+        not_configured:
+          description: "Choose which statuses count as done, in progress and blocked."
+          heading: "No statuses configured"
+        period:
+          one: "%{count} day"
+          other: "%{count} days"
+        period_label: "Period"
+        title: "Team performance"
+        unassigned: "Unassigned"
+
+  setting_team_performance_blocked_statuses: "Blocked"
+  setting_team_performance_done_statuses: "Done"
+  setting_team_performance_in_progress_statuses: "In progress"
+  setting_team_performance_statuses: "Team performance widget"
+  setting_team_performance_statuses_text: >-
+    Statuses the team performance widget on the project overview counts as done, in progress and blocked.
+    Done counts the work packages that reached one of these statuses within the selected period,
+    in progress and blocked count the work packages in them right now.
