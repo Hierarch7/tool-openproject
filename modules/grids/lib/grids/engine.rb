@@ -37,6 +37,30 @@ module Grids
           .push(
             "grids/widgets/members/show"
           )
+
+        OpenProject::AccessControl.permission(:view_work_packages)
+          .controller_actions
+          .push(
+            "grids/widgets/team_performances/show"
+          )
+      end
+    end
+
+    # Statuses the team performance widget counts as done, in progress and blocked.
+    # Until an admin saves them, they fall back to statuses named the usual way.
+    initializer "grids.settings" do
+      {
+        team_performance_done_statuses: ["done", "closed", "закрыто"],
+        team_performance_in_progress_statuses: ["in progress", "в процессе", "в работе"],
+        team_performance_blocked_statuses: ["blocked", "заблокировано"]
+      }.each do |name, status_names|
+        ::Settings::Definition.add name,
+                                   format: :array,
+                                   default: -> {
+                                     Status.pluck(:id, :name).filter_map do |id, status_name|
+                                       id.to_s if status_names.include?(status_name.strip.downcase)
+                                     end
+                                   }
       end
     end
 

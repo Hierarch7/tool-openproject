@@ -1,0 +1,48 @@
+.op-team-performance
+  turbo-frame[aria-busy="true"] &
+    opacity: 0.6
+
+  &--table
+    width: 100%
+    border-collapse: collapse
+
+    th,
+    td
+      padding: var(--base-size-8) 0 var(--base-size-8) var(--base-size-12)
+      border-bottom: var(--borderWidth-thin) solid var(--borderColor-muted)
+      text-align: right
+      white-space: nowrap
+      font-variant-numeric: tabular-nums
+
+      // The assignee column takes the remaining width and truncates long names,
+      // so a narrow widget does not push the counters out of sight.
+      &:first-child
+        width: 100%
+        max-width: 0
+        padding-left: 0
+        overflow: hidden
+        text-overflow: ellipsis
+        text-align: left
+
+    thead th
+      font-weight: var(--base-text-weight-semibold)
+      color: var(--fgColor-muted)
+      vertical-align: bottom
+      white-space: normal
+
+    tbody th
+      font-weight: var(--base-text-weight-normal)
+
+      opce-principal
+        display: block
+
+      .op-principal
+        display: flex
+        max-width: 100%
+        justify-content: flex-start
+
+    tfoot
+      th,
+      td
+        border-bottom: 0
+        font-weight: var(--base-text-weight-semibold)

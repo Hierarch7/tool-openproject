@@ -1,0 +1,113 @@
+<%#-- copyright
+OpenProject is an open source project management software.
+Copyright (C) the OpenProject GmbH
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+OpenProject is a fork of ChiliProject, which is a fork of Redmine. The copyright follows:
+Copyright (C) 2006-2013 Jean-Philippe Lang
+Copyright (C) 2010-2013 the ChiliProject Team
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+See COPYRIGHT and LICENSE files for more details.
+
+++#%>
+
+<%= widget_wrapper do |container| %>
+  <% container.with_body(classes: "op-team-performance", test_selector: "team-performance-widget") do %>
+    <%= render(Primer::Alpha::SegmentedControl.new("aria-label": t(".period_label"), size: :small, mb: 3)) do |control| %>
+      <% PERIODS.each do |days| %>
+        <% control.with_item(
+             tag: :a,
+             href: period_path(days),
+             label: t(".period", count: days),
+             selected: days == selected_period,
+             data: { turbo_frame: wrapper_key }
+           ) %>
+      <% end %>
+    <% end %>
+
+    <% if !configured? %>
+      <%= render(Primer::Beta::Blankslate.new(test_selector: "team-performance-widget-not-configured")) do |blankslate| %>
+        <% blankslate.with_visual_icon(icon: :gear) %>
+        <% blankslate.with_heading(tag: :h3).with_content(t(".not_configured.heading")) %>
+        <% blankslate.with_description_content(t(".not_configured.description")) %>
+        <% if can_configure_statuses? %>
+          <% blankslate.with_primary_action(href: admin_settings_work_packages_general_path, scheme: :secondary) do %>
+            <%= t(".configure_statuses") %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% elsif rows.empty? %>
+      <%= render(Primer::Beta::Blankslate.new(test_selector: "team-performance-widget-empty")) do |blankslate| %>
+        <% blankslate.with_visual_icon(icon: :people) %>
+        <% blankslate.with_heading(tag: :h3).with_content(t(".empty.heading")) %>
+        <% blankslate.with_description_content(t(".empty.description")) %>
+      <% end %>
+    <% else %>
+      <table class="op-team-performance--table">
+        <thead>
+          <tr>
+            <th scope="col"><%= WorkPackage.human_attribute_name(:assigned_to) %></th>
+            <% Grids::TeamPerformance::GROUPS.each do |group| %>
+              <th scope="col"><%= t(".columns.#{group}") %></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% rows.each do |row| %>
+            <tr>
+              <th scope="row">
+                <% if row.principal %>
+                  <%= render(Users::AvatarComponent.new(user: row.principal, size: :mini, link: false, show_name: true)) %>
+                <% else %>
+                  <%= render(Primer::Beta::Text.new(color: :subtle)) { t(".unassigned") } %>
+                <% end %>
+              </th>
+              <% Grids::TeamPerformance::GROUPS.each do |group| %>
+                <% ids = row.public_send(group) %>
+                <td>
+                  <% if ids.any? %>
+                    <%= render(Primer::Beta::Link.new(href: work_packages_path(ids))) { ids.size.to_s } %>
+                  <% else %>
+                    <%= render(Primer::Beta::Text.new(color: :subtle)) { "0" } %>
+                  <% end %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th scope="row"><%= t(:label_total) %></th>
+            <% Grids::TeamPerformance::GROUPS.each do |group| %>
+              <td><%= totals[group] %></td>
+            <% end %>
+          </tr>
+        </tfoot>
+      </table>
+
+      <%= render(Primer::Beta::Text.new(tag: :p, color: :subtle, font_size: :small, mt: 3, mb: 0)) { t(".caption") } %>
+    <% end %>
+  <% end %>
+
+  <% if configured? && can_configure_statuses? %>
+    <% container.with_footer do %>
+      <%= render(Primer::Beta::Link.new(href: admin_settings_work_packages_general_path)) { t(".configure_statuses") } %>
+    <% end %>
+  <% end %>
+<% end %>

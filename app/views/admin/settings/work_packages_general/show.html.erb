@@ -121,5 +121,17 @@ See COPYRIGHT and LICENSE files for more details.
     </fieldset>
   </section>
 
+  <section class="form--section">
+    <fieldset class="form--fieldset">
+      <legend class="form--fieldset-legend"><%= t(:setting_team_performance_statuses) %></legend>
+      <%= render(Primer::Beta::Text.new(tag: :p, color: :subtle, mb: 3)) { t(:setting_team_performance_statuses_text) } %>
+      <%= settings_matrix(
+            %i[team_performance_done_statuses team_performance_in_progress_statuses team_performance_blocked_statuses],
+            Status.all.map { |status| { caption: status.name, value: status.id.to_s } },
+            label_choices: :label_status
+          ) %>
+    </fieldset>
+  </section>
+
   <%= styled_button_tag t(:button_save), class: "-primary -with-icon icon-checkmark" %>
 <% end %>
