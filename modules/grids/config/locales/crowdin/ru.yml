@@ -44,3 +44,33 @@ ru:
         no_results: Нет видимых потомков.
         title: Подпроекты
         view_all_subitems: Отобразить все подпроекты
+      team_performance:
+        caption: >-
+          Выполнено — переведены в выполненный статус за выбранный период и засчитаны тому, кто был исполнителем в этот момент.
+          В работе и в блоке — прямо сейчас.
+        columns:
+          blocked: В блоке
+          done: Выполнено
+          in_progress: В работе
+        configure_statuses: Настроить статусы
+        empty:
+          description: За этот период ничего не выполнено, и сейчас нет задач в работе или в блоке.
+          heading: Нет данных
+        not_configured:
+          description: Выберите, какие статусы считать выполненными, в работе и в блоке.
+          heading: Статусы не настроены
+        period:
+          one: "%{count} день"
+          few: "%{count} дня"
+          many: "%{count} дней"
+          other: "%{count} дня"
+        period_label: Период
+        title: Производительность команды
+        unassigned: Не назначено
+  setting_team_performance_blocked_statuses: В блоке
+  setting_team_performance_done_statuses: Выполнено
+  setting_team_performance_in_progress_statuses: В работе
+  setting_team_performance_statuses: Виджет «Производительность команды»
+  setting_team_performance_statuses_text: >-
+    Статусы, которые виджет «Производительность команды» на обзоре проекта считает выполненными, находящимися в работе и в блоке.
+    Выполнено — задачи, перешедшие в один из этих статусов за выбранный период; в работе и в блоке — задачи в этих статусах прямо сейчас.
