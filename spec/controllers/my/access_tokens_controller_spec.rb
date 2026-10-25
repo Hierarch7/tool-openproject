@@ -89,7 +89,7 @@ RSpec.describe My::AccessTokensController do
           post :generate_api_key, params: { token_api: { token_name: "PayApp" } }, format: :turbo_stream
         end.not_to change(Token::API, :count)
 
-        expect(response).to have_http_status(:bad_request)
+        expect(response).to have_http_status(:forbidden)
       end
 
       it "rejects the token creation dialog" do
@@ -101,6 +101,8 @@ RSpec.describe My::AccessTokensController do
 
     context "with another administrator" do
       let(:user) { create(:admin, login: "another-admin") }
+
+      render_views
 
       it "rejects a direct request to create an API token" do
         expect do
