@@ -68,6 +68,8 @@ module OpenProject
             end
 
             if user.active?
+              return fail_with_header!(error: "invalid_token") unless user.api_tokens_allowed?
+
               success!(user)
             else
               fail_with_header!(

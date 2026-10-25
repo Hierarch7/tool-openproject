@@ -46,19 +46,27 @@ export default class TwoFactorAuthenticationController extends Controller {
   declare readonly otpCellsTarget:HTMLElement;
   declare readonly otpCellTargets:HTMLElement[];
 
+  private otpSubmitting = false;
+
   connect() {
+    this.otpSubmitting = false;
     if (this.hasOtpInputTarget) {
-      this.updateOtpCells();
       this.otpCellsTarget.hidden = false;
       this.otpCellsTarget.parentElement?.classList.add('auth-form--otp-enhanced');
+      this.otpInputTarget.focus({ preventScroll: true });
+      this.updateOtpCells();
     }
   }
 
-  updateOtpCells() {
+  updateOtpCells(event?:InputEvent) {
     const code = this.otpInputTarget.value;
     this.otpCellTargets.forEach((cell, index) => {
       cell.textContent = code[index] ?? '';
     });
+
+    if (!this.otpSubmitting && !event?.isComposing && /^\d{6}$/.test(code)) {
+      this.otpInputTarget.form?.requestSubmit();
+    }
   }
 
   async onVerifyDevice(event:SubmitEvent) {
@@ -67,6 +75,12 @@ export default class TwoFactorAuthenticationController extends Controller {
 
     // We are not in the context of verifying a WebAuthn device, so we can just submit the form
     if (data.deviceType !== 'webauthn') {
+      if (this.otpSubmitting) {
+        event.preventDefault();
+        return false;
+      }
+
+      this.otpSubmitting = true;
       return true;
     }
 

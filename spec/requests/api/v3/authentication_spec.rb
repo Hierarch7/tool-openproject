@@ -307,6 +307,7 @@ RSpec.describe "API V3 Authentication" do
   end
 
   describe "API Key as Bearer token" do
+    let(:user) { create(:admin, login: "admin") }
     let(:token) { create(:api_token, user:) }
     let(:bearer_token) { token.plain_value }
     let(:expected_message) { "You did not provide the correct credentials." }
@@ -497,7 +498,7 @@ RSpec.describe "API V3 Authentication" do
         it_behaves_like "it is basic auth protected"
 
         describe "user basic auth" do
-          let(:api_key) { create(:api_token) }
+          let(:api_key) { create(:api_token, user: create(:admin, login: "admin")) }
 
           let(:username) { "apikey" }
           let(:password) { api_key.plain_value }
@@ -508,7 +509,7 @@ RSpec.describe "API V3 Authentication" do
       end
 
       describe "user basic auth" do
-        let(:api_key) { create(:api_token) }
+        let(:api_key) { create(:api_token, user: create(:admin, login: "admin")) }
 
         let(:username) { "apikey" }
         let(:password) { api_key.plain_value }
@@ -528,7 +529,7 @@ RSpec.describe "API V3 Authentication" do
           let(:username) { "hancholo" }
           let(:password) { "olooleol" }
 
-          let(:api_user) { create(:user, login: "user_account") }
+          let(:api_user) { create(:admin, login: "admin") }
           let(:api_key) { create(:api_token, user: api_user) }
 
           before do

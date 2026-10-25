@@ -33,10 +33,18 @@ import { setupStimulusTest, type StimulusTestContext } from 'core-stimulus/test-
 
 describe('TwoFactorAuthenticationController OTP input', () => {
   let ctx:StimulusTestContext;
+  let submissions:Event[];
 
   beforeEach(async () => {
     ctx = await setupStimulusTest({
       controllers: { 'two-factor-authentication': TwoFactorAuthenticationController },
+    });
+    submissions = [];
+    ctx.container.addEventListener('submit', (event) => {
+      if (!event.defaultPrevented) {
+        submissions.push(event);
+      }
+      event.preventDefault();
     });
   });
 
@@ -44,7 +52,9 @@ describe('TwoFactorAuthenticationController OTP input', () => {
 
   async function mountOtp(value = '') {
     await ctx.mount(`
-      <form data-controller="two-factor-authentication">
+      <form data-controller="two-factor-authentication"
+            data-device-type="totp"
+            data-action="submit->two-factor-authentication#onVerifyDevice">
         <label for="otp">Code</label>
         <div class="auth-form--otp">
           <span class="form--text-field-container">
@@ -74,21 +84,74 @@ describe('TwoFactorAuthenticationController OTP input', () => {
     expect(ctx.container.querySelector('.auth-form--otp')).toHaveClass('auth-form--otp-enhanced');
   });
 
-  it('mirrors a pasted code without changing the submitted value or submitting the form', async () => {
+  it('submits a pasted six-digit code while preserving leading zeros', async () => {
     const input = await mountOtp();
-    const submit = vi.fn();
-    input.form!.addEventListener('submit', submit);
 
     input.value = '001234';
     input.dispatchEvent(new Event('input', { bubbles: true }));
 
     expect(displayedCode()).toEqual(['0', '0', '1', '2', '3', '4']);
     expect(new FormData(input.form!).get('otp')).toBe('001234');
-    expect(submit).not.toHaveBeenCalled();
+    expect(submissions).toHaveLength(1);
+  });
+
+  it('focuses the code input when the controller connects', async () => {
+    const input = await mountOtp();
+
+    expect(input).toHaveFocus();
+  });
+
+  it('waits until all six digits have been entered', async () => {
+    const input = await mountOtp();
+
+    for (const code of ['0', '01', '012', '0123', '01234']) {
+      input.value = code;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      expect(submissions).toHaveLength(0);
+    }
+
+    input.value = '012345';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+
+    expect(submissions).toHaveLength(1);
+  });
+
+  it('does not automatically submit invalid or incomplete codes', async () => {
+    const input = await mountOtp();
+
+    for (const code of ['', '12345', '1234567', 'abcdef', '12345 ']) {
+      input.value = code;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    expect(submissions).toHaveLength(0);
+  });
+
+  it('waits until input composition has completed', async () => {
+    const input = await mountOtp();
+    input.value = '123456';
+    input.dispatchEvent(new InputEvent('input', { bubbles: true, isComposing: true }));
+
+    expect(submissions).toHaveLength(0);
+
+    input.dispatchEvent(new InputEvent('input', { bubbles: true, isComposing: false }));
+
+    expect(submissions).toHaveLength(1);
+  });
+
+  it('prevents duplicate submissions from input events, Enter, or the submit button', async () => {
+    const input = await mountOtp();
+    input.value = '123456';
+
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.form!.requestSubmit();
+
+    expect(submissions).toHaveLength(1);
   });
 
   it('clears trailing cells when the user deletes digits', async () => {
-    const input = await mountOtp('123456');
+    const input = await mountOtp('12345');
 
     input.value = '12';
     input.dispatchEvent(new Event('input', { bubbles: true }));

@@ -55,6 +55,7 @@ module My
 
     def dialog
       @token_type = params[:token_type] || "api"
+      render_403 if @token_type == "api" && !current_user.api_tokens_allowed?
     end
 
     def index
@@ -172,7 +173,7 @@ module My
     helper_method :has_tokens?
 
     def has_tokens?
-      Setting.feeds_enabled? || Setting.api_tokens_enabled? || current_user.ical_tokens.any?
+      Setting.feeds_enabled? || current_user.api_tokens_allowed? || current_user.ical_tokens.any?
     end
 
     def set_api_token

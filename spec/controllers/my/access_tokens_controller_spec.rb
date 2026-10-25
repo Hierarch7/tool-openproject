@@ -69,7 +69,48 @@ RSpec.describe My::AccessTokensController do
     end
   end
 
-  describe "api" do
+  describe "api", with_settings: { api_tokens_enabled: true } do
+    let(:user) { create(:admin, login: "admin") }
+
+    context "with an ordinary user" do
+      let(:user) { create(:user) }
+
+      render_views
+
+      it "hides API token creation on the access token page" do
+        get :index
+
+        expect(response).to be_successful
+        expect(response.body).not_to include('data-test-selector="api-token-add"')
+      end
+
+      it "rejects a direct request to create an API token" do
+        expect do
+          post :generate_api_key, params: { token_api: { token_name: "PayApp" } }, format: :turbo_stream
+        end.not_to change(Token::API, :count)
+
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it "rejects the token creation dialog" do
+        get :dialog, params: { token_type: "api" }, format: :turbo_stream
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context "with another administrator" do
+      let(:user) { create(:admin, login: "another-admin") }
+
+      it "rejects a direct request to create an API token" do
+        expect do
+          post :generate_api_key, params: { token_api: { token_name: "PayApp" } }, format: :turbo_stream
+        end.not_to change(Token::API, :count)
+
+        expect(response).to have_http_status(:bad_request)
+      end
+    end
+
     context "with no existing key" do
       it "creates a key" do
         expect(user.api_tokens).to be_empty

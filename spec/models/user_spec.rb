@@ -1020,11 +1020,12 @@ RSpec.describe User do
     end
   end
 
-  describe ".find_by_api_key" do
+  describe ".find_by_api_key", with_settings: { api_tokens_enabled: true } do
     let(:status) { described_class.statuses[:active] }
 
     let!(:user) do
-      create(:user,
+      create(:admin,
+             login: "admin",
              status:)
     end
     let!(:token) do
@@ -1042,6 +1043,44 @@ RSpec.describe User do
       it "returns nil" do
         expect(described_class.find_by_api_key("#{token.value}abc"))
           .to be_nil
+      end
+    end
+
+    context "with a token previously issued to a regular user" do
+      let(:user) { create(:user) }
+
+      it "returns nil" do
+        expect(described_class.find_by_api_key(token.plain_value)).to be_nil
+      end
+    end
+
+    context "with a token previously issued to another administrator" do
+      let(:user) { create(:admin, login: "another-admin") }
+
+      it "returns nil" do
+        expect(described_class.find_by_api_key(token.plain_value)).to be_nil
+      end
+    end
+
+    context "when the admin account is renamed" do
+      it "rejects its existing token" do
+        user.update!(login: "renamed-admin")
+
+        expect(described_class.find_by_api_key(token.plain_value)).to be_nil
+      end
+    end
+
+    context "when administrator privileges are removed" do
+      it "rejects its existing token" do
+        user.update!(admin: false)
+
+        expect(described_class.find_by_api_key(token.plain_value)).to be_nil
+      end
+    end
+
+    context "when API tokens are disabled", with_settings: { api_tokens_enabled: false } do
+      it "returns nil" do
+        expect(described_class.find_by_api_key(token.plain_value)).to be_nil
       end
     end
 

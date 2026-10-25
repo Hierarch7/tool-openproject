@@ -34,8 +34,16 @@ module APITokens
 
     validates :token_name, presence: true
     validate :token_name_is_unique, unless: :token_name_is_blank?
+    validate :api_token_access_allowed
 
     private
+
+    def api_token_access_allowed
+      return unless model.is_a?(Token::API)
+      return if user.api_tokens_allowed? && model.user_id == user.id
+
+      errors.add(:base, :error_unauthorized)
+    end
 
     def token_name_is_blank?
       token_name.blank?

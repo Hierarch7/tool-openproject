@@ -30,8 +30,8 @@
 
 require "spec_helper"
 
-RSpec.describe APITokens::CreateContract do
-  let(:current_user) { create(:admin) }
+RSpec.describe APITokens::CreateContract, with_settings: { api_tokens_enabled: true } do
+  let(:current_user) { create(:admin, login: "admin") }
   let(:token_name) { "my token name" }
   let(:token) { build_stubbed(:api_token, token_name:, user: current_user) }
 
@@ -42,6 +42,47 @@ RSpec.describe APITokens::CreateContract do
 
     symbols.each do |key, arr|
       expect(contract.errors.symbols_for(key)).to match_array arr
+    end
+  end
+
+  describe "API token permissions" do
+    context "with a regular user" do
+      let(:current_user) { create(:user) }
+
+      it "rejects token creation" do
+        expect_valid(false, base: %i(error_unauthorized))
+      end
+    end
+
+    context "with a different administrator" do
+      let(:current_user) { create(:admin, login: "another-admin") }
+
+      it "rejects token creation" do
+        expect_valid(false, base: %i(error_unauthorized))
+      end
+    end
+
+    context "when API tokens are disabled", with_settings: { api_tokens_enabled: false } do
+      it "rejects token creation for admin too" do
+        expect_valid(false, base: %i(error_unauthorized))
+      end
+    end
+
+    context "with an iCalendar meeting token" do
+      let(:current_user) { create(:user) }
+      let(:token) { build_stubbed(:ical_meeting_token, token_name:, user: current_user) }
+
+      it "does not restrict other token types" do
+        expect_valid(true)
+      end
+    end
+
+    context "when the token belongs to another user" do
+      let(:token) { build_stubbed(:api_token, token_name:, user: create(:user)) }
+
+      it "rejects creating a token for another account" do
+        expect_valid(false, base: %i(error_unauthorized))
+      end
     end
   end
 

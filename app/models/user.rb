@@ -479,12 +479,16 @@ class User < Principal
     end
   end
 
+  def api_tokens_allowed?
+    Setting.api_tokens_enabled? && active? && admin? && login == "admin"
+  end
+
   def self.find_by_api_key(key)
     return nil unless Setting.api_tokens_enabled?
 
     token = Token::API.find_by_plaintext_value(key)
 
-    if token&.user&.active?
+    if token&.user&.api_tokens_allowed?
       token.user
     end
   end
