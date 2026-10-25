@@ -54,6 +54,7 @@ class AccountController < ApplicationController
                              :auth_source_sso_failed
 
   before_action :apply_csp_appends, only: %i[login]
+  before_action :set_login_language, only: %i[login internal_login]
   before_action :disable_api
   before_action :check_auth_source_sso_failure, only: :auth_source_sso_failed
   before_action :check_internal_login_enabled, only: :internal_login
@@ -211,6 +212,16 @@ class AccountController < ApplicationController
   end
 
   private
+
+  def set_login_language
+    return unless request.get? && !current_user.logged?
+
+    language = params[:language]
+    return unless language.is_a?(String) && valid_languages.include?(language)
+
+    session[:login_language] = language
+    set_language_if_valid(language)
+  end
 
   def handle_expired_token(token)
     send_activation_email! token.user

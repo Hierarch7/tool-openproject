@@ -43,6 +43,37 @@ RSpec.describe ApplicationController do
     end
   end
 
+  describe "login language",
+           with_settings: { login_required: false, available_languages: %w[en de], default_language: "en" } do
+    let(:user) { create(:user, language: "en") }
+
+    before do
+      session[:login_language] = "de"
+      request.env["HTTP_ACCEPT_LANGUAGE"] = "en"
+    end
+
+    it "uses the selected language before login" do
+      get :index
+
+      expect(I18n.locale).to eq(:de)
+    end
+
+    it "keeps the selected language while authentication stages are pending" do
+      session[:authenticated_user_id] = user.id
+      get :index
+
+      expect(I18n.locale).to eq(:de)
+    end
+
+    it "uses the profile language after login" do
+      as_logged_in_user(user) do
+        get :index
+
+        expect(I18n.locale).to eq(:en)
+      end
+    end
+  end
+
   describe "logging requesting users", with_settings: { login_required: false } do
     let(:user_message) do
       "OpenProject User: #{user.firstname} Crazy name (#{user.login} ID: #{user.id} <#{user.mail}>)"

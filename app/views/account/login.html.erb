@@ -33,7 +33,25 @@ See COPYRIGHT and LICENSE files for more details.
 <%= render Homescreen::AnnouncementComponent.new(announcement: Announcement.active_and_current) %>
 
 <div id="login-form" class="form -bordered auth-form">
-  <h1><%= I18n.t(:label_login) %></h1>
+  <div class="auth-form--header">
+    <h1><%= I18n.t(:label_login) %></h1>
+    <% if valid_languages.many? %>
+      <%= form_tag(
+            controller.action_name == "internal_login" ? internal_signin_path : signin_path,
+            method: :get,
+            class: "auth-form--language",
+            data: { controller: "auto-submit", turbo: false }
+          ) do %>
+        <%= back_url_hidden_field_tag(use_referer: false) %>
+        <%= label_tag "login_language", t(:label_language), class: "sr-only" %>
+        <%= styled_select_tag "language",
+                              options_for_select(lang_options_for_select(false), I18n.locale.to_s),
+                              id: "login_language",
+                              data: { action: "change->auto-submit#submit" } %>
+        <noscript><%= submit_tag t(:button_apply), class: "button" %></noscript>
+      <% end %>
+    <% end %>
+  </div>
 
   <% unless OpenProject::Configuration.disable_password_login? %>
     <%= render partial: "password_login_form" %>

@@ -240,6 +240,10 @@ class ApplicationController < ActionController::Base
            (session[:authenticated_user_id].present? && User.find_by(id: session[:authenticated_user_id])) ||
            User.anonymous
     SetLocalizationService.new(user, request.env["HTTP_ACCEPT_LANGUAGE"]).call
+
+    if !current_user.logged? && session[:login_language].is_a?(String)
+      set_language_if_valid(session[:login_language])
+    end
   end
 
   def deny_access(not_found: false)
