@@ -21,7 +21,7 @@ RSpec.describe "Login with 2FA remember cookie",
   end
   let!(:device) { create(:two_factor_authentication_device_sms, user:, active: true, default: true) }
 
-  def login_with_cookie
+  def login_with_cookie(remember: true)
     page.driver.clear_cookies
 
     sms_token = nil
@@ -32,9 +32,9 @@ RSpec.describe "Login with 2FA remember cookie",
 
     first_login_step
 
-    expect(page).to have_css("input#remember_me")
+    expect(page).to have_checked_field("remember_me")
     SeleniumHubWaiter.wait
-    check "remember_me"
+    uncheck "remember_me" unless remember
 
     two_factor_step sms_token
     expect_logged_in
@@ -61,6 +61,15 @@ RSpec.describe "Login with 2FA remember cookie",
   end
 
   context "when user has no remember cookie" do
+    it "allows opting out of remembering the device" do
+      login_with_cookie(remember: false)
+
+      expect(TwoFactorAuthentication::RememberedAuthToken.where(user:)).not_to exist
+
+      visit "/logout"
+      expect_no_autologin
+    end
+
     it "can remove the autologin cookie after login" do
       login_with_cookie
       visit my_security_path

@@ -3,7 +3,7 @@
 <% has_backup_codes = @authenticated_user.otp_backup_codes.exists? %>
 <% html_title t(:field_otp) %>
 <div id="login-form"
-     class="form -bordered"
+     class="form -bordered auth-form"
      data-controller="two-factor-authentication">
   <%= styled_form_tag(
         { action: :confirm_otp },
@@ -17,20 +17,32 @@
         }
       ) do %>
     <%= back_url_hidden_field_tag %>
-    <h2><%= t "two_factor_authentication.label_two_factor_authentication" %></h2>
+    <h1><%= t "two_factor_authentication.label_two_factor_authentication" %></h1>
     <% identifier = @used_device.request_2fa_identifier(@strategy.channel) %>
     <% if @used_device.input_based? %>
       <p><%= t("two_factor_authentication.devices.2fa_from_input_html", device_name: identifier) %></p>
-      <hr class="form--separator">
-      <div class="form--field -wide-label">
+      <div class="form--field -vertical">
         <%= styled_label_tag "otp", t(:field_otp) %>
-        <div class="form--field-container">
-          <%= styled_text_field_tag "otp", nil, autocomplete: "off", size: 6, maxlength: 6, autofocus: true %>
+        <div class="form--field-container auth-form--otp">
+          <%= styled_text_field_tag "otp", nil,
+                                    autocomplete: "one-time-code",
+                                    inputmode: "numeric",
+                                    size: 6,
+                                    maxlength: 6,
+                                    autofocus: true,
+                                    data: {
+                                      two_factor_authentication_target: "otpInput",
+                                      action: "input->two-factor-authentication#updateOtpCells"
+                                    } %>
+          <div class="auth-form--otp-cells" data-two-factor-authentication-target="otpCells" aria-hidden="true" hidden>
+            <% 6.times do %>
+              <span data-two-factor-authentication-target="otpCell"></span>
+            <% end %>
+          </div>
         </div>
       </div>
     <% else %>
       <p><%= t("two_factor_authentication.devices.2fa_from_webauthn_html", device_name: identifier) %></p>
-      <hr class="form--separator">
       <%= hidden_field_tag "webauthn_credential", nil, "data-two-factor-authentication-target": "webauthnCredential" %>
       <div class="form--field-error" data-two-factor-authentication-target="errorDisplay"></div>
     <% end %>
@@ -38,7 +50,7 @@
       <div class="form--field -wide-label">
         <label class="form--label-with-check-box -no-ellipsis">
           <div class="form--check-box-container">
-            <%= styled_check_box_tag "remember_me", true, false %>
+            <%= styled_check_box_tag "remember_me", true, true %>
           </div>
           <%= t "two_factor_authentication.remember.dont_ask_again", days: remember_2fa_days %>
         </label>

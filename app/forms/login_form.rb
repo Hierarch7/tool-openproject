@@ -65,7 +65,7 @@ class LoginForm < ApplicationForm
     end
 
     f.html_content do
-      flex_layout(justify_content: :space_between, align_items: :center) do |flex|
+      flex_layout(classes: "auth-form--actions", justify_content: :space_between, align_items: :center) do |flex|
         flex.with_column do
           render(Primer::Beta::Button.new(type: :submit, scheme: :primary)) { I18n.t(:button_login) }
         end

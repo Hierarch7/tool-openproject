@@ -36,11 +36,30 @@ type CreationOptionsJSON = WebAuthnJSON.CredentialCreationOptionsJSON['publicKey
 type RequestOptionsJSON = NonNullable<WebAuthnJSON.CredentialRequestOptionsJSON['publicKey']>;
 
 export default class TwoFactorAuthenticationController extends Controller {
-  static targets = ['resendOptions', 'webauthnCredential', 'errorDisplay'];
+  static targets = ['resendOptions', 'webauthnCredential', 'errorDisplay', 'otpInput', 'otpCells', 'otpCell'];
 
   declare readonly resendOptionsTarget:HTMLElement;
   declare readonly webauthnCredentialTarget:HTMLInputElement;
   declare readonly errorDisplayTarget:HTMLElement;
+  declare readonly hasOtpInputTarget:boolean;
+  declare readonly otpInputTarget:HTMLInputElement;
+  declare readonly otpCellsTarget:HTMLElement;
+  declare readonly otpCellTargets:HTMLElement[];
+
+  connect() {
+    if (this.hasOtpInputTarget) {
+      this.updateOtpCells();
+      this.otpCellsTarget.hidden = false;
+      this.otpCellsTarget.parentElement?.classList.add('auth-form--otp-enhanced');
+    }
+  }
+
+  updateOtpCells() {
+    const code = this.otpInputTarget.value;
+    this.otpCellTargets.forEach((cell, index) => {
+      cell.textContent = code[index] ?? '';
+    });
+  }
 
   async onVerifyDevice(event:SubmitEvent) {
     const form = event.target as HTMLFormElement;

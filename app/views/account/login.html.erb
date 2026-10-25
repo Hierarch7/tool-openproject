@@ -32,10 +32,9 @@ See COPYRIGHT and LICENSE files for more details.
 
 <%= render Homescreen::AnnouncementComponent.new(announcement: Announcement.active_and_current) %>
 
-<div id="login-form" class="form -bordered">
+<div id="login-form" class="form -bordered auth-form">
   <h1><%= I18n.t(:label_login) %></h1>
 
-  <hr class="form--separator">
   <% unless OpenProject::Configuration.disable_password_login? %>
     <%= render partial: "password_login_form" %>
   <% end %>
