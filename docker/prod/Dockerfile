@@ -41,6 +41,7 @@ ENV OPENPROJECT_INSTALLATION__TYPE=docker
 ENV OPENPROJECT_ATTACHMENTS__STORAGE__PATH=$APP_DATA_PATH/files
 ENV OPENPROJECT_RAILS__CACHE__STORE=file_store
 ENV OPENPROJECT_ANGULAR_UGLIFY=true
+ENV OPENPROJECT_AVAILABLE__LANGUAGES="[en, ru]"
 
 # set the following to an empty string if you don't want to automatically use the bundled hocuspocus
 # (or set an external hocuspocus directly - if empty you can set it in the UI)
